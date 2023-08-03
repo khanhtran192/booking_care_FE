@@ -9,7 +9,7 @@ type Props = {
 function Layout({ children }: Props) {
 	return (
 		<>
-			<div className="fixed w-full left-0 shadow-md">
+			<div className="fixed w-full top-0 left-0 shadow-md">
 				<div className="mx-auto lg:max-w-6xl container flex justify-between h-max items-center py-3">
 					<div className="flex gap-2">
 						<Image src="logo.svg" alt="logo" width={20} height={20} />
@@ -49,8 +49,8 @@ function Layout({ children }: Props) {
 				</div>
 			</div>
 
-			<div className="my-[4.5rem]">{children}</div>
-			<div className="w-full h-16 fixed bottom-0 left-0 bg-blue-400 flex items-center">
+			<div className="mt-[4.5rem]">{children}</div>
+			<div className="w-full h-16 bg-blue-400 flex items-center">
 				<div className="container mx-auto lg:max-w-6xl text-white">
 					© 2023 BookingCare
 				</div>
