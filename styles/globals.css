@@ -86,3 +86,11 @@ body {
 	height: 100%;
 	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
+
+/* Overide react-responsive-carousel */
+.carousel-root .slider-wrapper {
+	@apply rounded-lg;
+}
+.carousel-root .slider {
+	@apply gap-4 pr-8 -ml-4;
+}

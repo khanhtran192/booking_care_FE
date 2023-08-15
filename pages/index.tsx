@@ -1,93 +1,67 @@
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import Doctor from "@/components/sections/Doctor";
-import Footer from "@/components/Footer";
-import Card from "@/components/Card";
+import Footer from "@/components/layout/Footer";
+import Card, { CardProps } from "@/components/AppCard";
 import Link from "next/link";
+import AppCarousel from "@/components/AppCarousel";
+import AppContainer from "@/components/layout/AppContainer";
+import SectionList from "@/components/sections/SectionList";
+import { Input } from "@/components/ui/input";
+import Layout from "@/components/layout";
 
 const inter = Inter({ subsets: ["latin"] });
 
+const blogs: CardProps[] = Array(6).fill({
+	title: "Giải pháp chuyển đổi số toàn diện cho bệnh viện, phòng khám",
+	image: "https://cdn.bookingcare.vn/fo/2022/08/16/141010-cds.png",
+	href: "/",
+	content: `Mô hình "Nền tảng như một dịch vụ" bao gồm Website, ứng dụng di động và phần mềm quản trị, tích hợp 3 trong 1 nền tảng tiện ích dễ dùng`,
+});
+
+const departments: CardProps[] = Array(5).fill({
+	small: true,
+	title: "Thần kinh",
+	image: "https://cdn.bookingcare.vn/fr/w300/2023/06/20/113208-than-kinh.jpg",
+});
+
+const hospitals: CardProps[] = Array(4).fill({
+	small: true,
+	title: "Trung tâm Khám sức khỏe định kỳ, Bệnh viện Trung ương Quân đội 108",
+	image:
+		"https://cdn.bookingcare.vn/fr/w500/2019/07/31/085056logobenhvien108.jpg",
+});
+
 export default function Home() {
 	return (
-		<>
-			<div className="bg-gradient-to-br from-blue-50 via-purple-50 via-purple-100 to-white to-90%">
-				<div className="mx-auto lg:max-w-6xl container flex">
-					<div className="flex flex-col gap-10 py-10 items-start">
-						<button className="rounded-full bg-white px-4 py-3 text-xs">
-							<span className="rounded-full px-2 py-1 bg-purple-500 text-white mr-1">
-								CAREBLOG
-							</span>
-							Tin tức được featured
-						</button>
-						<h1 className="text-purple-500 text-7xl">
-							Nền tảng y tế <br />
-							Chăm sóc sức khỏe <br />
-							toàn diện
-						</h1>
-						<input
-							type="text"
-							className="py-2 px-3 rounded w-3/4 border border-gray-100 border-solid"
-							placeholder="Tìm bệnh viện"
-						/>
-					</div>
-					<Image
-						className="flex-1"
-						src="mainBg.svg"
-						alt=""
-						width={300}
-						height={300}
-					/>
-				</div>
+		<Layout pageTitle={"Nền tảng y tế Chăm sóc sức khỏe toàn diện"}>
+			<div className="py-16">
+				<AppContainer>
+					<AppCarousel>
+						{blogs.map((blog, i) => (
+							<Card key={i} {...blog} />
+						))}
+					</AppCarousel>
+				</AppContainer>
 			</div>
+			<SectionList
+				className="bg-gray-100"
+				title="Chuyên khoa phổ biến"
+				href="/departments">
+				{departments.map((department, i) => (
+					<Card key={i} {...department} />
+				))}
+			</SectionList>
+			<SectionList title="Cơ sở y tế nổi bật" href="/hospitals">
+				{hospitals.map((department, i) => (
+					<Card key={i} {...department} />
+				))}
+			</SectionList>
 			<div>
-				<div className="container lg:max-w-6xl mx-auto flex gap-4 py-16">
-					<Card
-						title="Giải pháp chuyển đổi số toàn diện cho bệnh viện, phòng khám"
-						image="https://cdn.bookingcare.vn/fo/2022/08/16/141010-cds.png"
-					/>
-					<Card
-						title="Giải pháp chuyển đổi số toàn diện cho bệnh viện, phòng khám"
-						image="https://cdn.bookingcare.vn/fo/2022/08/16/141010-cds.png"
-					/>
-					<Card
-						title="Giải pháp chuyển đổi số toàn diện cho bệnh viện, phòng khám"
-						image="https://cdn.bookingcare.vn/fo/2022/08/16/141010-cds.png"
-					/>
-				</div>
-			</div>
-			<div className="bg-gray-100 py-16">
-				<div className="container lg:max-w-6xl mx-auto">
-					<div className="flex justify-between">
-						<h3 className="text-lg font-bold">Chuyên khoa phổ biến</h3>
-						<Link href="/" className="text-orange-300">
-							Xem thêm
-						</Link>
-					</div>
-					<div className="flex gap-4">
-						<Card
-							small
-							title="Thần kinh"
-							image="https://cdn.bookingcare.vn/fr/w300/2023/06/20/113208-than-kinh.jpg"
-						/>
-						<Card
-							small
-							title="Thần kinh"
-							image="https://cdn.bookingcare.vn/fr/w300/2023/06/20/113208-than-kinh.jpg"
-						/>
-						<Card
-							small
-							title="Thần kinh"
-							image="https://cdn.bookingcare.vn/fr/w300/2023/06/20/113208-than-kinh.jpg"
-						/>
-					</div>
-				</div>
-			</div>
-			<div>
-				<div className="container lg:max-w-6xl mx-auto">
+				<AppContainer>
 					<Doctor />
-				</div>
+				</AppContainer>
 			</div>
-			<Footer />
-		</>
+		</Layout>
 	);
 }
