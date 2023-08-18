@@ -2,11 +2,11 @@ import { Pagination, PaginationProps } from "antd";
 import React from "react";
 import DoctorCard, { DetailCardProps } from "./DoctorCard";
 
-interface Props extends PaginationProps {
+export interface CardListProps extends PaginationProps {
 	data: DetailCardProps[];
 }
 
-function CardList({ data, className, ...props }: Props) {
+function CardList({ data, className, ...props }: CardListProps) {
 	return (
 		<>
 			{data.map((card) => (

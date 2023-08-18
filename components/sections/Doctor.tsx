@@ -1,9 +1,20 @@
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
-type Props = {};
+export type DoctorProps = {
+	id: string | number;
+	name: string;
+	avatar?: string;
+	department?: string;
+	href?: string;
+};
 
-function Doctor({}: Props) {
+type Props = {
+	doctors: any[];
+};
+
+function Doctor({ doctors }: Props) {
 	return (
 		<section className="bg-white dark:bg-gray-900">
 			<div className="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 lg:px-6">
@@ -14,110 +25,30 @@ function Doctor({}: Props) {
 					<p className="font-light text-gray-500 sm:text-xl dark:text-gray-400"></p>
 				</div>
 				<div className="grid gap-8 lg:gap-16 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-					<div className="text-center text-gray-500 dark:text-gray-400">
-						<Image
-							className="mx-auto mb-4 w-36 h-36 rounded-full"
-							width={144}
-							height={144}
-							src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/bonnie-green.png"
-							alt="Bonnie Avatar"
-						/>
-						<h3 className="mb-1 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-							<a href="#">Bonnie Green</a>
-						</h3>
-						<p>CEO/Co-founder</p>
-					</div>
-					<div className="text-center text-gray-500 dark:text-gray-400">
-						<Image
-							className="mx-auto mb-4 w-36 h-36 rounded-full"
-							width={144}
-							height={144}
-							src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/helene-engels.png"
-							alt="Helene Avatar"
-						/>
-						<h3 className="mb-1 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-							<a href="#">Helene Engels</a>
-						</h3>
-						<p>CTO/Co-founder</p>
-					</div>
-					<div className="text-center text-gray-500 dark:text-gray-400">
-						<Image
-							className="mx-auto mb-4 w-36 h-36 rounded-full"
-							width={144}
-							height={144}
-							src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png"
-							alt="Jese Avatar"
-						/>
-						<h3 className="mb-1 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-							<a href="#">Jese Leos</a>
-						</h3>
-						<p>SEO & Marketing</p>
-					</div>
-					<div className="text-center text-gray-500 dark:text-gray-400">
-						<Image
-							className="mx-auto mb-4 w-36 h-36 rounded-full"
-							width={144}
-							height={144}
-							src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/joseph-mcfall.png"
-							alt="Joseph Avatar"
-						/>
-						<h3 className="mb-1 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-							<a href="#">Joseph Mcfall</a>
-						</h3>
-						<p>Sales</p>
-					</div>
-					<div className="text-center text-gray-500 dark:text-gray-400">
-						<Image
-							className="mx-auto mb-4 w-36 h-36 rounded-full"
-							width={144}
-							height={144}
-							src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/sofia-mcguire.png"
-							alt="Sofia Avatar"
-						/>
-						<h3 className="mb-1 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-							<a href="#">Lana Byrd</a>
-						</h3>
-						<p>Web Designer</p>
-					</div>
-					<div className="text-center text-gray-500 dark:text-gray-400">
-						<Image
-							className="mx-auto mb-4 w-36 h-36 rounded-full"
-							width={144}
-							height={144}
-							src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/thomas-lean.png"
-							alt="Leslie Avatar"
-						/>
-						<h3 className="mb-1 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-							<a href="#">Leslie Livingston</a>
-						</h3>
-						<p>Graphic Designer</p>
-					</div>
-					<div className="text-center text-gray-500 dark:text-gray-400">
-						<Image
-							className="mx-auto mb-4 w-36 h-36 rounded-full"
-							width={144}
-							height={144}
-							src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/michael-gouch.png"
-							alt="Michael Avatar"
-						/>
-						<h3 className="mb-1 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-							<a href="#">Michael Gough</a>
-						</h3>
-						<p>React Developer</p>
-					</div>
-					<div className="text-center text-gray-500 dark:text-gray-400">
-						<Image
-							className="mx-auto mb-4 w-36 h-36 rounded-full"
-							width={144}
-							height={144}
-							src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/neil-sims.png"
-							alt="Neil Avatar"
-						/>
-						<h3 className="mb-1 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-							<a href="#">Neil Sims</a>
-						</h3>
-						<p>Vue.js Developer</p>
-					</div>
+					{doctors?.map(({ id, ...doctor }) => {
+						return (
+							<div
+								key={id}
+								className="text-center text-gray-500 dark:text-gray-400">
+								<Link href={`doctors/${id}`}>
+									<Image
+										className="mx-auto mb-4 w-36 h-36 rounded-full"
+										width={144}
+										height={144}
+										src={
+											doctor.avatar ||
+											"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQS1bCW97HV3Pdoboi7QnR8_8_KTCl28yyE6Q&usqp=CAU"
+										}
+										alt="Avatar"
+									/>
+								</Link>
+								<h3 className="mb-1 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+									<Link href={`doctors/${id}`}>{doctor.name}</Link>
+								</h3>
+								<p>{doctor.department}</p>
+							</div>
+						);
+					})}
 				</div>
 			</div>
 		</section>

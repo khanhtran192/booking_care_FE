@@ -9,10 +9,10 @@ export type DetailCardProps = {
 	id: string | number;
 	title: string;
 	image: string;
-	desc: string;
+	desc?: string;
 	price: string;
 	address: string;
-	times: string[];
+	times?: string[];
 	isDetail?: boolean;
 };
 
@@ -38,7 +38,13 @@ const DoctorCard: React.FC<DetailCardProps> = ({
 				className="pb-4"
 				avatar={
 					<Link href={`doctors/${id}`}>
-						<Avatar size={isDetail ? 120 : 80} src={image} />
+						<Avatar
+							size={isDetail ? 120 : 80}
+							src={
+								image ||
+								"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQS1bCW97HV3Pdoboi7QnR8_8_KTCl28yyE6Q&usqp=CAU"
+							}
+						/>
 					</Link>
 				}
 				title={
@@ -48,7 +54,7 @@ const DoctorCard: React.FC<DetailCardProps> = ({
 						{title}
 					</Link>
 				}
-				description={desc}
+				description={desc ?? ""}
 			/>
 			<hr />
 			<div className="mt-4 flex gap-4">
@@ -60,7 +66,7 @@ const DoctorCard: React.FC<DetailCardProps> = ({
 						<DatePicker />
 					</Typography.Title>
 					<div className="flex flex-wrap justify-between mt-4">
-						{times.map((time, i) => (
+						{times?.map((time, i) => (
 							<Button className="mb-4" key={i}>
 								{time}
 							</Button>
