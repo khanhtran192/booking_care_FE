@@ -1,13 +1,13 @@
 import React from "react";
-import AppCarousel from "../AppCarousel";
 import AppContainer from "../layout/AppContainer";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import AppCarousel from "../AppCarousel";
 
 type Props = {
 	href?: string;
 	title?: string;
-	children?: React.ReactChild[];
+	children: React.ReactNode[];
 	className?: string;
 };
 

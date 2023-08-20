@@ -1,39 +1,83 @@
-import DoctorCard from "@/components/CardList/DoctorCard";
+import { doctorApi } from "@/axiosClient/endpoints";
+import { DOCTORS } from "@/axiosClient/urls";
 import AppContainer from "@/components/layout/AppContainer";
+import Footer from "@/components/layout/Footer";
 import MainHeader from "@/components/layout/MainHeader";
-import React from "react";
+import { useFetch } from "@/lib/hooks";
+import { Avatar, Button, DatePicker, Typography } from "antd";
+import { GetServerSideProps } from "next";
 
-type Props = {};
+type Props = {
+	doctor: Awaited<ReturnType<typeof doctorApi.getById>>;
+};
 
-const html = `<div class="bs-noidung" id="bs-gioithieu"><h2>Bác sĩ Chuyên khoa II Trần Minh Khuyên</h2><ul><li>Nguyên Trưởng khoa lâm sàng, Bệnh tâm thần Thành phố Hồ Chí Minh</li><li>Tốt nghiệp Tâm lý trị liệu, trường Tâm lý Thực hành Paris (Psychology practique de Paris)</li><li>Bác sĩ nhận khám từ 16 tuổi trở lên</li></ul><h3>Quá trình đào tạo</h3><ul><li>Tốt nghiệp Bác sĩ Đa khoa, Trường Đại học y dược thành phố Hồ Chí Minh</li><li>Học chuyên khoa cấp I và chuyên khoa cấp II Chuyên ngành Tâm thần, Đại học Y khoa Huế</li><li>Tốt nghiệp Tâm lý trị liệu, trường Tâm lý thực Hành Paris (Psychology practique de Paris)</li></ul><h3>Quá trình công tác</h3><ul><li>Nguyên Trưởng phòng Kế hoạch Nghiệp vụ, Trưởng phòng khám Tâm thần Quận 3, thành phố Hồ Chí Minh</li><li>Nguyên Trưởng khoa lâm sàng Bệnh tâm thần thành phố Hồ Chí Minh</li><li>Giám định viên tư pháp chuyên ngành Tâm thần giám định các trường hợp trọng án, các trường hợp có liên quan pháp lý do cảnh sát điều tra, tòa án các cấp trưng cầu.</li></ul><h2>Khám và điều trị</h2><ul><li>Các rối loạn giấc ngủ không thực tổn: mất ngủ, ngủ nhiều, ngủ ngày quá mức, rối loạn nhịp thức ngủ, hoảng sợ khi ngủ, ác mộng, ngủ rũ,...</li><li>Các rối loạn lo âu: lo lắng, sợ hãi về tương lai, cảm giác cáu gắt, căng thẳng, vận động, bồn chồn, hồi hộp, vã mồ hôi tay chân, cồn cào,...</li><li>Rối loạn trầm cảm: buồn chán, bi quan, mệt mỏi, giảm hoạt động,...</li><li>Hưng cảm: vui vẻ quá mức, suồng sã, tăng hoạt động, đứng ngồi không yên,...</li><li>Rối loạn hoang tưởng:&nbsp;hoang tưởng bị hại, bị theo dõi, liên hệ, bị tội,...</li><li>Rối loạn ảo giác</li><li>Các rối loạn liên quan đến stress</li><li>Rối loạn khí sắc</li><li>Rối loạn cảm xúc phân liệt</li><li>Rối loạn đa nhân cách</li><li>Các bệnh lý loạn thần do sử dụng chất (ma túy đá, cần sa, heroin..)...</li></ul></div>`;
-
-function DoctorDetailPage({}: Props) {
-	const data = {
-		id: 1,
-		image:
-			"https://cdn.bookingcare.vn/fr/w200/2021/01/18/105401-bsckii-tran-minh-khuyen.jpg",
-		title: "Bác sĩ Chuyên khoa II Trần Minh Khuyên",
-		desc: `Nguyên Trưởng khoa lâm sàng, Bệnh tâm thần Thành phố Hồ Chí Minh
-	Tốt nghiệp Tâm lý trị liệu, trường Tâm lý Thực hành Paris (Psychology practique de Paris)
-	Bác sĩ nhận khám từ 16 tuổi trở lên`,
-		price: "250.000đ - 500.000đ",
-		address: `Phòng khám Vietlife MRI Trần Bình Trọng <br />
-		14 Trần Bình Trọng - Hoàn Kiếm - Hà Nội`,
-		times: Array(5).fill("9:00 - 10:00"),
+export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+	const doctor = await doctorApi.getById(params?.id as string);
+	return {
+		props: {
+			doctor,
+		},
 	};
+};
+
+function DoctorDetailPage({ doctor }: Props) {
+	const { data } = useFetch(`${DOCTORS}/${doctor.id}/time-slots`);
+
 	return (
 		<>
 			<MainHeader />
-			<AppContainer className="mt-[4.5rem]">
-				<DoctorCard {...data} isDetail />
-			</AppContainer>
+			<div className="bg-gradient-to-br from-blue-50 via-purple-50 via-purple-100 to-white to-90%">
+				<AppContainer className="mt-[4.5rem] py-8 flex gap-8 items-center">
+					<Avatar
+						className="border-2 border-solid border-blue-200 aspect-square shrink-0"
+						size={240}
+						src={
+							doctor.avatar ||
+							"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQS1bCW97HV3Pdoboi7QnR8_8_KTCl28yyE6Q&usqp=CAU"
+						}
+					/>
+					<div>
+						<Typography.Title level={1}>{doctor.name}</Typography.Title>
+						<p>
+							{doctor.degree ??
+								`Nguyên Trưởng khoa Tai mũi họng trẻ em, Bệnh viện Tai Mũi Họng
+							Trung ương Trên 25 năm công tác tại Bệnh viện Tai mũi họng Trung
+							ương Chuyên khám và điều trị các bệnh lý Tai Mũi Họng người lớn và
+							trẻ em`}
+						</p>
+					</div>
+				</AppContainer>
+			</div>
 			<AppContainer className="mb-4">
+				<div className="grid grid-cols-2 pt-4">
+					<div>
+						<Typography.Title level={3}>Địa chỉ khám</Typography.Title>
+						<p>{`Khoa: ${doctor.department.departmentName}`}</p>
+						<p>{doctor.department.hospital.name}</p>
+						<p>{doctor.department.hospital.address}</p>
+					</div>
+					<div>
+						<div className="flex justify-between items-center">
+							<Typography.Title className="!mb-0" level={3}>
+								Lịch khám
+							</Typography.Title>
+							<DatePicker />
+						</div>
+						<div className="flex gap-4 flex-wrap mt-4">
+							{data?.map((timeSlot: any) => (
+								<Button key={timeSlot.id}>{timeSlot.time}</Button>
+							))}
+						</div>
+					</div>
+				</div>
 				<hr className="my-4" />
 				<div
+					className="innerHtml-desc"
 					dangerouslySetInnerHTML={{
-						__html: html,
+						__html: doctor.specialize,
 					}}></div>
 			</AppContainer>
+			<Footer />
 		</>
 	);
 }

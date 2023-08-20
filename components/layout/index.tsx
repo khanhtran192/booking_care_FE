@@ -2,6 +2,7 @@ import Image from "next/image";
 import { ReactNode } from "react";
 import MainHeader from "./MainHeader";
 import { Input } from "antd";
+import Footer from "./Footer";
 
 type Props = {
 	children: ReactNode;
@@ -48,6 +49,7 @@ function Layout({
 				</div>
 				{children}
 			</div>
+			<Footer />
 		</>
 	);
 }

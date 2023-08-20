@@ -32,6 +32,32 @@ export interface Doctor {
 	department: Department;
 }
 
+export interface Pack {
+	id: number;
+	name: string;
+	description: string;
+	logo: string;
+	price: string;
+	hospital: Hospital;
+}
+
+export type TimeSlot = {
+	id: number;
+	time: string;
+	startTime: {
+		timeSLot: string;
+		value: string;
+		number: number;
+	};
+	endTime: {
+		timeSLot: string;
+		value: string;
+		number: number;
+	};
+	description: string;
+	price: number;
+};
+
 interface Sort {
 	empty: boolean;
 	unsorted: boolean;
@@ -50,6 +76,7 @@ interface Pageable {
 export interface ApiResponse<DataType> {
 	totalPages: number;
 	size: number;
+	number: number;
 	totalElements: number;
 	content: DataType[];
 	sort: Sort;

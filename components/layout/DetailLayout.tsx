@@ -3,6 +3,7 @@ import MainHeader from "./MainHeader";
 import Image from "next/image";
 import { Typography } from "antd";
 import AppContainer from "./AppContainer";
+import Footer from "./Footer";
 
 type Props = {
 	bgImage?: string;
@@ -36,6 +37,7 @@ function DetailLayout({ bgImage, avatar, title, subTitle, children }: Props) {
 				</div>
 				{children}
 			</div>
+			<Footer />
 		</>
 	);
 }

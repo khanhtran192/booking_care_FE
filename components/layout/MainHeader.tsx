@@ -1,12 +1,12 @@
-import React from "react";
-import AppContainer from "./AppContainer";
+import { Button, Divider } from "antd";
 import Image from "next/image";
 import Link from "next/link";
+import AppContainer from "./AppContainer";
 
 function MainHeader() {
 	return (
-		<div className="fixed w-full top-0 left-0 bg-white z-50 shadow-md">
-			<AppContainer className="flex justify-between h-max items-center py-3">
+		<div className="fixed w-full h-[4.5rem] top-0 left-0 bg-white z-50 shadow-md">
+			<AppContainer className="flex justify-between h-full items-center py-3">
 				<Link href="/" className="flex gap-2">
 					<Image src="logo.svg" alt="logo" width={20} height={20} />
 					<h3 className="text-blue-400">BookingCare</h3>
@@ -29,13 +29,17 @@ function MainHeader() {
 					</li>
 				</ul>
 				<div>
-					<div className="flex w-full justify-end gap-2">
-						<Image src="question.svg" alt="help" width={16} height={16} />
-						<p className="text-blue-400">Hỗ trợ</p>
-					</div>
-					<a className="text-blue-400" href="tel:+012-345-6789">
-						012-345-6789
-					</a>
+					<Link href="login">
+						<Button className="p-0" type="link">
+							Đăng nhập
+						</Button>
+					</Link>
+					<Divider className="border-gray-300" type="vertical" />
+					<Link href="register">
+						<Button className="p-0" type="link">
+							Đăng ký
+						</Button>
+					</Link>
 				</div>
 			</AppContainer>
 		</div>

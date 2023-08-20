@@ -1,7 +1,6 @@
 import type {
 	AxiosError,
 	AxiosInstance,
-	AxiosRequestConfig,
 	AxiosRequestHeaders,
 	AxiosResponse,
 } from "axios";
@@ -20,7 +19,8 @@ const onResponseError = (error: AxiosError): Promise<AxiosError> => {
 };
 
 const axiosClient: AxiosInstance = axios.create({
-	baseURL: "https://full-doodles-poke.loca.lt/api",
+	// baseURL: "https://booking-care-be.loca.lt/api/",
+	baseURL: "http://localhost:3000/api/",
 	headers: {
 		"content-type": "application/json",
 	},

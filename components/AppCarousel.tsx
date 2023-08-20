@@ -1,22 +1,29 @@
-import React from "react";
-import { Carousel, CarouselProps } from "react-responsive-carousel";
+import { LeftCircleOutlined, RightCircleOutlined } from "@ant-design/icons";
+import { Carousel } from "antd";
+import { ReactNode, useMemo } from "react";
+import AppGrid from "./layout/AppGrid";
 
-interface AppCarouselProps extends CarouselProps {}
+type CarouselProps<Item> = {
+	children: ReactNode[];
+};
 
-function AppCarousel(props: AppCarouselProps) {
-	return <Carousel {...props} />;
-}
+const AppCarousel = <Item,>({ children }: CarouselProps<Item>) => {
+	const items = useMemo(() => {
+		return Array.from(
+			{ length: Math.ceil(children.length / 4) },
+			(_, index) => (
+				<AppGrid key={index} className="!inline-grid">
+					{children.slice(index * 4, index * 4 + 4)}
+				</AppGrid>
+			)
+		);
+	}, [children]);
 
-AppCarousel.defaultProps = {
-	showArrows: true,
-	centerMode: true,
-	centerSlidePercentage: 30,
-	showThumbs: false,
-	autoPlay: true,
-	stopOnHover: true,
-	infiniteLoop: true,
-	transitionTime: 500,
-	showIndicators: false,
-} as CarouselProps;
+	return (
+		<Carousel autoplay pauseOnDotsHover autoplaySpeed={100000}>
+			{items}
+		</Carousel>
+	);
+};
 
-export default React.memo(AppCarousel);
+export default AppCarousel;
