@@ -1,5 +1,5 @@
 import axiosClient from ".";
-import { Department, Doctor, Hospital, Pack } from "./types";
+import { Department, Doctor, Hospital, LoginInfo, Pack, RegisterInfo } from "./types";
 import { DEPARTMENTS, DOCTORS, HOSPITALS, PACKS } from "./urls";
 import { convertApiResponseToAppPagination } from "./utils";
 
@@ -52,3 +52,12 @@ export const packApi = {
 	getById: (id: number | string) =>
 		axiosClient.get(`${PACKS}/${id}`) as Promise<Pack>,
 };
+
+export const authApi = {
+	login: (data: LoginInfo) => axiosClient.post("/authenticate", data) as Promise<any>,
+	register: (data: RegisterInfo) => {
+		delete data.confirmPassword;
+		data.langKey = "en";
+		console.log("data", data);
+		return axiosClient.post("/register", data) as Promise<any>},
+}

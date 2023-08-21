@@ -46,7 +46,7 @@
 .ant-btn-primary,
 [type="submit"] {
 	background-color: #1677ff;
-	@apply flex items-center;
+	@apply flex items-center justify-center;
 }
 
 .ant-layout-sider-trigger {

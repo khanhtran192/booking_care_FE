@@ -82,3 +82,14 @@ export interface ApiResponse<DataType> {
 	sort: Sort;
 	pageable: Pageable;
 }
+
+export interface LoginInfo {
+	login: string;
+	password: string;
+}
+
+export interface RegisterInfo extends LoginInfo{
+	email: string;
+	langKey: string;
+	confirmPassword?: string;
+}
