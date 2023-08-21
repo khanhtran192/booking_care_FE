@@ -1,4 +1,9 @@
-import type { AxiosError, AxiosInstance, AxiosRequestHeaders, AxiosResponse, } from "axios";
+import type {
+	AxiosError,
+	AxiosInstance,
+	AxiosRequestHeaders,
+	AxiosResponse,
+} from "axios";
 import axios from "axios";
 import queryString from "query-string";
 
@@ -14,9 +19,9 @@ const onResponseError = (error: AxiosError): Promise<AxiosError> => {
 };
 
 const axiosClient: AxiosInstance = axios.create({
-	// baseURL: "https://booking-care-be.loca.lt/api/",
+	baseURL: "https://booking-care-be.loca.lt/api/",
 	// baseURL: "http://localhost:3000/api/",
-	baseURL: "http://192.168.1.43:8080/api/",
+	// baseURL: "http://192.168.1.43:8080/api/",
 	headers: {
 		"content-type": "application/json",
 	},
