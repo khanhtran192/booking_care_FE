@@ -13,7 +13,7 @@ function BookForm({ data, ...props }: BookFormProps) {
 	const handleClickTimeSLot = useCallback(() => {
 		setOpen(true);
 	}, []);
-
+	console.log(data)
 	return (
 		<Form layout="vertical" {...props}>
 			<div className="flex justify-between items-center">
