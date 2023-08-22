@@ -4,7 +4,7 @@ import React, { useContext, useEffect } from "react";
 
 const AuthContext = React.createContext<{
 	user: UserInfo | undefined;
-	setUser: (user: UserInfo) => void;
+	setUser: (user?: UserInfo) => void;
 }>({ user: undefined, setUser: () => {} });
 
 function AuthProvider({ children }: { children: React.ReactNode }) {

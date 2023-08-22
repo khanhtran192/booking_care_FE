@@ -1,10 +1,9 @@
-import { Avatar, Button, Divider, Dropdown, MenuProps, Typography } from "antd";
-import Image from "next/image";
-import Link from "next/link";
-import AppContainer from "./AppContainer";
-import { DownOutlined, UserOutlined } from "@ant-design/icons";
-import Logo from "../Logo";
 import { useAuth } from "@/lib/AuthProvider";
+import { DownOutlined, UserOutlined } from "@ant-design/icons";
+import { Avatar, Button, Divider, Dropdown, MenuProps, Typography } from "antd";
+import Link from "next/link";
+import Logo from "../Logo";
+import AppContainer from "./AppContainer";
 
 const items: MenuProps["items"] = [
 	{
@@ -12,7 +11,7 @@ const items: MenuProps["items"] = [
 		key: "0",
 	},
 	{
-		label: <Link href="/manage">Quản lý</Link>,
+		label: <Link href="/manage/dashboard">Quản lý</Link>,
 		key: "1",
 	},
 	{
@@ -26,7 +25,7 @@ const items: MenuProps["items"] = [
 ];
 
 function MainHeader() {
-	const { user } = useAuth();
+	const { user, setUser } = useAuth();
 	return (
 		<div className="fixed w-full h-[4.5rem] top-0 left-0 bg-white z-50 shadow-md">
 			<AppContainer className="flex justify-between h-full items-center py-3">
@@ -60,10 +59,19 @@ function MainHeader() {
 								size={40}
 								src={<UserOutlined />}
 							/>
-							<Dropdown menu={{ items }} trigger={["click"]}>
+							<Dropdown
+								menu={{
+									items,
+									onSelect: ({ key }) => {
+										if (key === "3") {
+											setUser();
+										}
+									},
+								}}
+								trigger={["click"]}>
 								<Typography.Link>
 									<div className="flex items-center gap-1">
-										Click me
+										{user.name ?? "Unknown User"}
 										<DownOutlined />
 									</div>
 								</Typography.Link>
