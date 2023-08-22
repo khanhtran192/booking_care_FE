@@ -52,6 +52,11 @@ function Hospital({ packList, departmentList, hospital }: Props) {
 			<AppContainer>
 				<Typography.Title level={2} className="!text-xl">
 					Giới thiệu
+					<div
+						className="innerHtml-desc"
+						dangerouslySetInnerHTML={{
+							__html: hospital.description,
+						}}></div>
 				</Typography.Title>
 
 				<div className="py-16">

@@ -7,6 +7,7 @@ export type Hospital = {
 	logo?: string;
 	backgroundImage?: string;
 	type: string;
+	description: string;
 };
 
 export interface Department {
