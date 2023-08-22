@@ -11,69 +11,70 @@ import { Avatar, Button, DatePicker, Typography } from "antd";
 import { GetServerSideProps } from "next";
 
 type Props = {
-	doctor: Awaited<ReturnType<typeof doctorApi.getById>>;
+  doctor: Awaited<ReturnType<typeof doctorApi.getById>>;
 };
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
-	const doctor = await doctorApi.getById(params?.id as string);
-	return {
-		props: {
-			doctor,
-		},
-	};
+  const doctor = await doctorApi.getById(params?.id as string);
+  return {
+    props: {
+      doctor,
+    },
+  };
 };
 
 function DoctorDetailPage({ doctor }: Props) {
-	const { axiosAuth } = useAuth();
-	const { data } = useSWR(`${DOCTORS}/${doctor.id}/time-slots`, (url) =>
-		axiosAuth.get(url)
-	);
+  const { axiosAuth } = useAuth();
+  const { data } = useSWR(`${DOCTORS}/${doctor.id}/time-slots`, (url) =>
+    axiosAuth.get(url)
+  );
 
-	return (
-		<>
-			<MainHeader />
-			<div className="bg-gradient-to-br from-blue-50 via-purple-50 via-purple-100 to-white to-90%">
-				<AppContainer className="mt-[4.5rem] py-8 flex gap-8 items-center">
-					<Avatar
-						className="border-2 border-solid border-blue-200 aspect-square shrink-0"
-						size={240}
-						src={
-							doctor.avatar ||
-							"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQS1bCW97HV3Pdoboi7QnR8_8_KTCl28yyE6Q&usqp=CAU"
-						}
-					/>
-					<div>
-						<Typography.Title level={1}>{doctor.name}</Typography.Title>
-						<p>
-							{doctor.degree ??
-								`Nguyên Trưởng khoa Tai mũi họng trẻ em, Bệnh viện Tai Mũi Họng
+  return (
+    <>
+      <MainHeader />
+      <div className="bg-gradient-to-br from-blue-50 via-purple-50 via-purple-100 to-white to-90%">
+        <AppContainer className="mt-[4.5rem] py-8 flex gap-8 items-center">
+          <Avatar
+            className="border-2 border-solid border-blue-200 aspect-square shrink-0"
+            size={240}
+            src={
+              doctor.avatar ||
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQS1bCW97HV3Pdoboi7QnR8_8_KTCl28yyE6Q&usqp=CAU"
+            }
+          />
+          <div>
+            <Typography.Title level={1}>{doctor.name}</Typography.Title>
+            <p>
+              {doctor.degree ??
+                `Nguyên Trưởng khoa Tai mũi họng trẻ em, Bệnh viện Tai Mũi Họng
 							Trung ương Trên 25 năm công tác tại Bệnh viện Tai mũi họng Trung
 							ương Chuyên khám và điều trị các bệnh lý Tai Mũi Họng người lớn và
 							trẻ em`}
-						</p>
-					</div>
-				</AppContainer>
-			</div>
-			<AppContainer className="mb-4">
-				<div className="grid grid-cols-2 pt-4">
-					<div>
-						<Typography.Title level={3}>Địa chỉ khám</Typography.Title>
-						<p>{`Khoa: ${doctor.department.departmentName}`}</p>
-						<p>{doctor.department.hospital.name}</p>
-						<p>{doctor.department.hospital.address}</p>
-					</div>
-					<BookForm data={data} />
-				</div>
-				<hr className="my-4" />
-				<div
-					className="innerHtml-desc"
-					dangerouslySetInnerHTML={{
-						__html: doctor.specialize,
-					}}></div>
-			</AppContainer>
-			<Footer />
-		</>
-	);
+            </p>
+          </div>
+        </AppContainer>
+      </div>
+      <AppContainer className="mb-4">
+        <div className="grid grid-cols-2 pt-4">
+          <div>
+            <Typography.Title level={3}>Địa chỉ khám</Typography.Title>
+            <p>{`Khoa: ${doctor.department.departmentName}`}</p>
+            <p>{doctor.department.hospital.name}</p>
+            <p>{doctor.department.hospital.address}</p>
+          </div>
+				  <BookForm data={data} doctorId={doctor?.id} />
+        </div>
+        <hr className="my-4" />
+        <div
+          className="innerHtml-desc"
+          dangerouslySetInnerHTML={{
+            __html: doctor.specialize,
+          }}
+        ></div>
+      </AppContainer>
+      <Footer />
+    </>
+  );
 }
 
 export default DoctorDetailPage;

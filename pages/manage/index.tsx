@@ -1,52 +1,51 @@
 import React from "react";
 import {
-	LaptopOutlined,
-	NotificationOutlined,
-	PlusCircleFilled,
+	BankOutlined,
+	DeleteOutlined,
+	EditOutlined,
+	IdcardOutlined,
+	InsertRowLeftOutlined,
+	MedicineBoxOutlined,
 	PlusOutlined,
 	UserOutlined,
 } from "@ant-design/icons";
 import type { MenuProps, TableColumnsType } from "antd";
-import {
-	Breadcrumb,
-	Button,
-	Layout,
-	Menu,
-	Space,
-	Table,
-	Tag,
-	theme,
-} from "antd";
+import { Button, Layout, Menu, Table, Tag, theme, } from "antd";
 import MainHeader from "@/components/layout/MainHeader";
 
 const { Header, Content, Sider } = Layout;
 
-const items1: MenuProps["items"] = ["1", "2", "3"].map((key) => ({
-	key,
-	label: `nav ${key}`,
-}));
-
-const items2: MenuProps["items"] = [
-	UserOutlined,
-	LaptopOutlined,
-	NotificationOutlined,
-].map((icon, index) => {
-	const key = String(index + 1);
-
-	return {
-		key: `sub${key}`,
-		icon: React.createElement(icon),
-		label: `subnav ${key}`,
-
-		children: new Array(4).fill(null).map((_, j) => {
-			const subKey = index * 4 + j + 1;
-			return {
-				key: subKey,
-				label: `option${subKey}`,
-			};
-		}),
-	};
-});
+const menuItems: MenuProps["items"] = [
+	{
+		key: "info",
+		label: "Thông tin cá nhân",
+		icon: <IdcardOutlined />
+	}, {
+	key: "manage",
+	type: "group",
+	label: "Quản lý",
+	children: [
+		{
+			key: "hospitals",
+			label: "Bệnh viện",
+			icon: <BankOutlined/>
+		}, {
+			key: "departments",
+			label: "Chuyên khoa",
+			icon: <InsertRowLeftOutlined/>
+		}, {
+			key: "doctors",
+			label: "Bác sĩ",
+			icon: <UserOutlined/>
+		},
+		{
+			key: "packs",
+			label: "Gói khám",
+			icon: <MedicineBoxOutlined/>
+		}
+	],
+},
+];
 
 interface DataType {
 	key: string;
@@ -78,29 +77,29 @@ const columns: TableColumnsType<DataType> = [
 		key: "tags",
 		dataIndex: "tags",
 		render: (_, { tags }) => (
-			<>
-				{tags.map((tag) => {
-					let color = tag.length > 5 ? "geekblue" : "green";
-					if (tag === "loser") {
-						color = "volcano";
-					}
-					return (
-						<Tag color={color} key={tag}>
-							{tag.toUpperCase()}
-						</Tag>
-					);
-				})}
-			</>
+				<>
+					{tags.map((tag) => {
+						let color = tag.length > 5 ? "geekblue" : "green";
+						if (tag === "loser") {
+							color = "volcano";
+						}
+						return (
+								<Tag color={color} key={tag}>
+									{tag.toUpperCase()}
+								</Tag>
+						);
+					})}
+				</>
 		),
 	},
 	{
-		title: "Action",
+		width: 100,
 		key: "action",
 		render: (_, record) => (
-			<Space size="middle">
-				<a>Invite {record.name}</a>
-				<a>Delete</a>
-			</Space>
+				<>
+					<Button icon={<EditOutlined/>} type="link"/>
+					<Button icon={<DeleteOutlined/>} danger type="link"/>
+				</>
 		),
 	},
 ];
@@ -135,39 +134,33 @@ const App: React.FC = () => {
 	} = theme.useToken();
 
 	return (
-		<Layout className="h-screen">
-			<MainHeader />
-			<Layout className="h-full mt-[4.5rem]">
-				<Sider collapsible width={200} style={{ background: colorBgContainer }}>
-					<Menu
-						mode="inline"
-						defaultSelectedKeys={["1"]}
-						defaultOpenKeys={["sub1"]}
-						style={{ height: "100%", borderRight: 0 }}
-						items={items2}
-					/>
-				</Sider>
-				<Layout style={{ padding: "0 24px 24px" }}>
-					<Breadcrumb style={{ margin: "16px 0" }}>
-						<Breadcrumb.Item>Home</Breadcrumb.Item>
-						<Breadcrumb.Item>List</Breadcrumb.Item>
-						<Breadcrumb.Item>App</Breadcrumb.Item>
-					</Breadcrumb>
-					<Content
-						style={{
-							padding: 24,
-							margin: 0,
-							minHeight: 280,
-							background: colorBgContainer,
-						}}>
-						<Button icon={<PlusOutlined />} type="primary">
-							Create
-						</Button>
-						<Table columns={columns} dataSource={data} />
-					</Content>
+			<Layout className="h-screen">
+				<MainHeader/>
+				<Layout className="h-full mt-[4.5rem]">
+					<Sider collapsible width={200} style={{ background: colorBgContainer }}>
+						<Menu
+								mode="inline"
+								defaultSelectedKeys={["info"]}
+								className={"h-full border-r-0"}
+								items={menuItems}
+						/>
+					</Sider>
+					<Layout style={{ padding: "0 24px 24px" }}>
+						<Content
+								style={{
+									padding: 24,
+									margin: 0,
+									minHeight: 280,
+									background: colorBgContainer,
+								}}>
+							<Button icon={<PlusOutlined/>} type="primary">
+								Create
+							</Button>
+							<Table columns={columns} dataSource={data}/>
+						</Content>
+					</Layout>
 				</Layout>
 			</Layout>
-		</Layout>
 	);
 };
 
