@@ -3,6 +3,8 @@ import { Button, DatePicker, Form, Input, Select } from "antd";
 import dayjs from "dayjs";
 import type { Dayjs } from "dayjs";
 import Logo from "@/components/Logo";
+import axiosClient from "@/axiosClient";
+import {useAuth} from "@/lib/AuthProvider";
 
 const { Option } = Select;
 
@@ -37,7 +39,9 @@ const tailFormItemLayout = {
 };
 
 const Info: React.FC = () => {
+  const { axiosAuth, user } = useAuth();
   const [form] = Form.useForm();
+
 
   const onFinish = (values: any) => {
     // format the dateOfBirth value using date.js
@@ -46,6 +50,7 @@ const Info: React.FC = () => {
       ...values,
       dateOfBirth: formattedDateOfBirth,
     };
+    axiosAuth.post("/customers", dataToSend)
     console.log("Received values of form: ", dataToSend);
   };
 
@@ -64,37 +69,37 @@ const Info: React.FC = () => {
         <div className="flex justify-center mb-6">
           <Logo />
         </div>
-        <Form.Item name="id" label="Id" required>
-          <Input />
-        </Form.Item>
+        {/*<Form.Item name="id" label="Id" required>*/}
+        {/*  <Input />*/}
+        {/*</Form.Item>*/}
 
-        <Form.Item
-          name="firstName"
-          label="First Name"
-          rules={[
-            {
-              required: true,
-              message: "Please input your first name!",
-            },
-          ]}
-          hasFeedback
-        >
-          <Input />
-        </Form.Item>
+        {/*<Form.Item*/}
+        {/*  name="firstName"*/}
+        {/*  label="First Name"*/}
+        {/*  rules={[*/}
+        {/*    {*/}
+        {/*      required: true,*/}
+        {/*      message: "Please input your first name!",*/}
+        {/*    },*/}
+        {/*  ]}*/}
+        {/*  hasFeedback*/}
+        {/*>*/}
+        {/*  <Input />*/}
+        {/*</Form.Item>*/}
 
-        <Form.Item
-          name="lastName"
-          label="Last Name"
-          rules={[
-            {
-              required: true,
-              message: "Please input your last name!",
-            },
-          ]}
-          hasFeedback
-        >
-          <Input />
-        </Form.Item>
+        {/*<Form.Item*/}
+        {/*  name="lastName"*/}
+        {/*  label="Last Name"*/}
+        {/*  rules={[*/}
+        {/*    {*/}
+        {/*      required: true,*/}
+        {/*      message: "Please input your last name!",*/}
+        {/*    },*/}
+        {/*  ]}*/}
+        {/*  hasFeedback*/}
+        {/*>*/}
+        {/*  <Input />*/}
+        {/*</Form.Item>*/}
 
         <Form.Item
           name="fullName"
@@ -112,7 +117,7 @@ const Info: React.FC = () => {
 
         <Form.Item
           name="address"
-          label="Address"
+          label="Địa chỉ"
           rules={[
             {
               required: true,
@@ -124,21 +129,21 @@ const Info: React.FC = () => {
           <Input />
         </Form.Item>
 
-        <Form.Item name="dateOfBirth" label="Date of birth" {...config}>
+        <Form.Item name="dateOfBirth" label="Ngày sinh" {...config}>
           <DatePicker className="w-full" />
         </Form.Item>
-        <Form.Item
-          name="email"
-          label="Email"
-          rules={[{ type: "email", required: true }]}
-        >
-          <Input />
-        </Form.Item>
+        {/*<Form.Item*/}
+        {/*  name="email"*/}
+        {/*  label="Email"*/}
+        {/*  rules={[{ type: "email", required: true }]}*/}
+        {/*>*/}
+        {/*  <Input />*/}
+        {/*</Form.Item>*/}
         <Form.Item
           name="phoneNumber"
-          label="Phone Number"
+          label="Số điện thoại"
           rules={[
-            { required: true, message: "Please input your phone number!" },
+            { required: true, message: "Vui lòng nhập số điện thoại liên hệ" },
           ]}
         >
           <Input
@@ -149,20 +154,20 @@ const Info: React.FC = () => {
         </Form.Item>
         <Form.Item
           name="idCard"
-          label="Id Card"
-          rules={[{ required: true, message: "Please input your id card!" }]}
+          label="Số căn cước công dân"
+          rules={[{ required: true, message: "Nhập số CCCD để xác minh bạn. Thông tin sẽ được bảo mật. " }]}
         >
           <Input />
         </Form.Item>
         <Form.Item
           name="gender"
-          label="Gender"
-          rules={[{ required: true, message: "Please select gender!" }]}
+          label="Giới tính"
+          rules={[{ required: true, message: "Vui lòng chọn giới tính!" }]}
         >
-          <Select placeholder="Select your gender">
-            <Option value="male">NAM</Option>
-            <Option value="female">NU</Option>
-            <Option value="other">KHAC</Option>
+          <Select placeholder="Chọn giới tính">
+            <Option value="NAM">Nam</Option>
+            <Option value="NU">Nữ</Option>
+            {/*<Option value="other">KHAC</Option>*/}
           </Select>
         </Form.Item>
         <Form.Item {...tailFormItemLayout} className="flex justify-center mt-8">
