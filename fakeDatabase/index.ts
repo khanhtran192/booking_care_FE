@@ -94,4 +94,16 @@ function generateTimeSlot(id: number) {
 
 const timeSlots = Array.from({ length: 10 }, (_, i) => generateTimeSlot(i));
 
-export { doctors, hospitals, departments, packs, timeSlots };
+const users = [
+	{
+		userId: 0,
+		doctorId: null,
+		hospitalId: null,
+		username: "admin",
+		id_token: "FAKE_TOKEN",
+		name: "Admin",
+		authorities: ["ADMIN", "USER"],
+	},
+];
+
+export { doctors, hospitals, departments, packs, timeSlots, users };

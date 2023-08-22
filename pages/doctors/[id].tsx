@@ -1,9 +1,12 @@
 import { doctorApi } from "@/axiosClient/endpoints";
 import { DOCTORS } from "@/axiosClient/urls";
+import BookForm from "@/components/form/BookForm";
 import AppContainer from "@/components/layout/AppContainer";
 import Footer from "@/components/layout/Footer";
 import MainHeader from "@/components/layout/MainHeader";
+import { useAuth } from "@/lib/AuthProvider";
 import { useFetch } from "@/lib/hooks";
+import useSWR from "swr";
 import { Avatar, Button, DatePicker, Typography } from "antd";
 import { GetServerSideProps } from "next";
 
@@ -21,7 +24,10 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 };
 
 function DoctorDetailPage({ doctor }: Props) {
-	const { data } = useFetch(`${DOCTORS}/${doctor.id}/time-slots`);
+	const { axiosAuth } = useAuth();
+	const { data } = useSWR(`${DOCTORS}/${doctor.id}/time-slots`, (url) =>
+		axiosAuth.get(url)
+	);
 
 	return (
 		<>
@@ -56,19 +62,7 @@ function DoctorDetailPage({ doctor }: Props) {
 						<p>{doctor.department.hospital.name}</p>
 						<p>{doctor.department.hospital.address}</p>
 					</div>
-					<div>
-						<div className="flex justify-between items-center">
-							<Typography.Title className="!mb-0" level={3}>
-								Lịch khám
-							</Typography.Title>
-							<DatePicker />
-						</div>
-						<div className="flex gap-4 flex-wrap mt-4">
-							{data?.map((timeSlot: any) => (
-								<Button key={timeSlot.id}>{timeSlot.time}</Button>
-							))}
-						</div>
-					</div>
+					<BookForm data={data} />
 				</div>
 				<hr className="my-4" />
 				<div
