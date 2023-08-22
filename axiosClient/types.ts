@@ -84,12 +84,23 @@ export interface ApiResponse<DataType> {
 }
 
 export interface LoginInfo {
-	login: string;
+	username: string;
 	password: string;
 }
 
-export interface RegisterInfo extends LoginInfo{
+export interface RegisterInfo extends Omit<LoginInfo, "username"> {
+	login: string;
 	email: string;
 	langKey: string;
 	confirmPassword?: string;
+}
+
+export interface UserInfo {
+	userId: number;
+	doctorId: number;
+	hospitalId: number;
+	username: string;
+	id_token: string;
+	name?: string;
+	authorities: string[];
 }

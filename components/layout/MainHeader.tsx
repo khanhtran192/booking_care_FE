@@ -3,32 +3,35 @@ import Image from "next/image";
 import Link from "next/link";
 import AppContainer from "./AppContainer";
 import { DownOutlined, UserOutlined } from "@ant-design/icons";
+import Logo from "../Logo";
+import { useAuth } from "@/lib/AuthProvider";
 
-const items: MenuProps['items'] = [
+const items: MenuProps["items"] = [
 	{
 		label: <Link href="/manage/info">Cập nhật thông tin</Link>,
-		key: '0',
+		key: "0",
 	},
 	{
 		label: <Link href="/manage">Quản lý</Link>,
-		key: '1',
+		key: "1",
 	},
 	{
-		type: 'divider',
+		type: "divider",
 	},
 	{
-		label: 'Đăng xuất',
+		label: "Đăng xuất",
 		danger: true,
-		key: '3',
+		key: "3",
 	},
 ];
 
 function MainHeader() {
+	const { user } = useAuth();
 	return (
 		<div className="fixed w-full h-[4.5rem] top-0 left-0 bg-white z-50 shadow-md">
 			<AppContainer className="flex justify-between h-full items-center py-3">
 				<Link href="/" className="flex gap-2">
-					<Image src="logo.svg" alt="logo" width={20} height={20} />
+					<Logo />
 					<h3 className="text-blue-400">BookingCare</h3>
 				</Link>
 				<ul className="flex gap-2">
@@ -48,29 +51,39 @@ function MainHeader() {
 						</Link>
 					</li>
 				</ul>
-				<div className="hidden">
-					<Link href="/login">
-						<Button className="p-0" type="link">
-							Đăng nhập
-						</Button>
-					</Link>
-					<Divider className="border-gray-300" type="vertical" />
-					<Link href="/register">
-						<Button className="p-0" type="link">
-							Đăng ký
-						</Button>
-					</Link>
-				</div>
+
 				<div className="flex items-center gap-2">
-					<Avatar className="bg-purple-300 flex items-center justify-center" size={40} src={<UserOutlined />} />
-					<Dropdown menu={{ items }} trigger={['click']}>
-						<Typography.Link>
-							<div className="flex items-center gap-1">
-								Click me
-								<DownOutlined />
-							</div>
-						</Typography.Link>
-					</Dropdown>
+					{user ? (
+						<>
+							<Avatar
+								className="bg-purple-300 flex items-center justify-center"
+								size={40}
+								src={<UserOutlined />}
+							/>
+							<Dropdown menu={{ items }} trigger={["click"]}>
+								<Typography.Link>
+									<div className="flex items-center gap-1">
+										Click me
+										<DownOutlined />
+									</div>
+								</Typography.Link>
+							</Dropdown>
+						</>
+					) : (
+						<>
+							<Link href="/login">
+								<Button className="p-0" type="link">
+									Đăng nhập
+								</Button>
+							</Link>
+							<Divider className="border-gray-300" type="vertical" />
+							<Link href="/register">
+								<Button className="p-0" type="link">
+									Đăng ký
+								</Button>
+							</Link>
+						</>
+					)}
 				</div>
 			</AppContainer>
 		</div>

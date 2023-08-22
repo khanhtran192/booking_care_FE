@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import Logo from "../Logo";
 
 function Footer() {
 	return (
@@ -10,7 +11,7 @@ function Footer() {
 					<div className="w-1/2 flex flex-col gap-2">
 						<Link href="/" className="text-blue-500">
 							<div className="flex gap-2">
-								<Image src="logo.svg" alt="logo" width={20} height={20} />
+								<Logo />
 								<h3 className="text-blue-400">BookingCare</h3>
 							</div>
 						</Link>

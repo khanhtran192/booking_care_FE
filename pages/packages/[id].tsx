@@ -5,8 +5,10 @@ import AppContainer from "@/components/layout/AppContainer";
 import Footer from "@/components/layout/Footer";
 import MainHeader from "@/components/layout/MainHeader";
 import { useFetch } from "@/lib/hooks";
+import useSWR from "swr";
 import { Avatar, Typography } from "antd";
 import { GetServerSideProps } from "next";
+import { useAuth } from "@/lib/AuthProvider";
 
 type Props = {
 	pack: Awaited<ReturnType<typeof packApi.getById>>;
@@ -22,7 +24,10 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 };
 
 function DoctorDetailPage({ pack }: Props) {
-	const { data } = useFetch(`${HOSPITALS}${PACKS}/${pack.id}/time-slots`);
+	const { axiosAuth } = useAuth();
+	const { data } = useSWR(`${HOSPITALS}${PACKS}/${pack.id}/time-slots`, (url) =>
+		axiosAuth.get(url)
+	);
 
 	return (
 		<>

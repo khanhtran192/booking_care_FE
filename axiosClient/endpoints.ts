@@ -1,5 +1,14 @@
 import axiosClient from ".";
-import { Department, Doctor, Hospital, LoginInfo, Pack, RegisterInfo } from "./types";
+import { setToken } from "./tokenStore";
+import {
+	Department,
+	Doctor,
+	Hospital,
+	LoginInfo,
+	Pack,
+	RegisterInfo,
+	UserInfo,
+} from "./types";
 import { DEPARTMENTS, DOCTORS, HOSPITALS, PACKS } from "./urls";
 import { convertApiResponseToAppPagination } from "./utils";
 
@@ -54,10 +63,21 @@ export const packApi = {
 };
 
 export const authApi = {
-	login: (data: LoginInfo) => axiosClient.post("/authenticate", data) as Promise<any>,
+	login: (data: LoginInfo) =>
+		axiosClient.post("/authenticate", data).then((user) => {
+			const newUser = user as unknown as UserInfo;
+			setToken(newUser.id_token);
+			return newUser;
+		}),
 	register: (data: RegisterInfo) => {
 		delete data.confirmPassword;
 		data.langKey = "en";
-		console.log("data", data);
-		return axiosClient.post("/register", data) as Promise<any>},
-}
+		return axiosClient.post("/register", data) as Promise<any>;
+	},
+	getUserInfo: (token: string) =>
+		axiosClient.get("/account", {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		}) as Promise<UserInfo>,
+};
