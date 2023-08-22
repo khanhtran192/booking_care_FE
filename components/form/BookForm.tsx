@@ -7,7 +7,7 @@ import {
   DatePicker,
   Form,
   FormProps,
-  Input,
+  Input, message,
   Space,
   Typography,
 } from "antd";
@@ -38,6 +38,7 @@ function BookForm({ data, doctorId, ...props }: BookFormProps) {
     console.log("AAAAAAAAAAAAAAAAAAAAa", dataToSend);
     if (doctorId) {
       axiosAuth.post(`/hospitals/doctors/${doctorId}/booking`, dataToSend);
+      message.success("Đặt lịch khám thành công!");
     }
   };
   return (
