@@ -25,7 +25,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 
 function DoctorDetailPage({ pack }: Props) {
 	const { axiosAuth } = useAuth();
-	const { data } = useSWR(`${HOSPITALS}${PACKS}/${pack.id}/time-slots`, (url) =>
+	const { data } = useSWR(`${HOSPITALS}${PACKS}/${pack.id}/time-slot-free`, (url) =>
 		axiosAuth.get(url)
 	);
 
@@ -54,7 +54,7 @@ function DoctorDetailPage({ pack }: Props) {
 						<p>{pack.hospital.name}</p>
 						<p>{pack.hospital.address}</p>
 					</div>
-					<BookForm data={data} />
+					<BookForm data={data} packId={pack?.id}/>
 				</div>
 				<hr className="my-4" />
 				<div

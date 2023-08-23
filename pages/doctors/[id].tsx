@@ -25,7 +25,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 
 function DoctorDetailPage({ doctor }: Props) {
   const { axiosAuth } = useAuth();
-  const { data } = useSWR(`${DOCTORS}/${doctor.id}/time-slots`, (url) =>
+  const { data } = useSWR(`${DOCTORS}/${doctor.id}/time-slot-free`, (url) =>
     axiosAuth.get(url)
   );
 
