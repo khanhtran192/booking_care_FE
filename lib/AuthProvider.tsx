@@ -1,6 +1,11 @@
 import { axiosAuth } from "@/axiosClient";
 import { UserInfo } from "@/axiosClient/types";
-import React, { useContext, useEffect } from "react";
+import {
+	deleteUser,
+	getUser,
+	setUser as setCookieUser,
+} from "@/axiosClient/userStore";
+import React, { useCallback, useContext, useEffect } from "react";
 
 const AuthContext = React.createContext<{
 	user: UserInfo | undefined;
@@ -8,7 +13,24 @@ const AuthContext = React.createContext<{
 }>({ user: undefined, setUser: () => {} });
 
 function AuthProvider({ children }: { children: React.ReactNode }) {
-	const [user, setUser] = React.useState<UserInfo>();
+	const [user, setStateUser] = React.useState<UserInfo>();
+
+	useEffect(() => {
+		const user = getUser();
+		if (user.id_token) {
+			setUser(user);
+		}
+	}, []);
+
+	const setUser = useCallback((user?: UserInfo) => {
+		setStateUser(user);
+		if (user) {
+			setCookieUser(user);
+		} else {
+			deleteUser();
+		}
+	}, []);
+
 	return (
 		<AuthContext.Provider value={{ user, setUser }}>
 			{children}

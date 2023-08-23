@@ -6,8 +6,8 @@ import type {
 	CreateAxiosDefaults,
 } from "axios";
 import axios from "axios";
+import { getCookie } from "cookies-next";
 import queryString from "query-string";
-import { getToken } from "./tokenStore";
 
 const onResponse = (response: AxiosResponse) => {
 	if (response.status === 200) {
@@ -27,6 +27,7 @@ const axiosDefault: CreateAxiosDefaults = {
 	//baseURL: "http://localhost:8080/api/",
 	headers: {
 		"Content-Type": "application/json",
+		Authorization: `Bearer ${getCookie("id_token")}`,
 	},
 	paramsSerializer: (params) =>
 		queryString.stringify(params || {}, {

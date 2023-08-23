@@ -105,3 +105,31 @@ export interface UserInfo {
 	name?: string;
 	authorities: string[];
 }
+
+export interface Customer {
+	id: number;
+	fullName: string;
+	dateOfBirth: string;
+	address: string;
+	phoneNumber: string;
+	email: string;
+}
+
+export interface OrderInfo {
+	id: number;
+	address: string;
+	symptom: string;
+	date: string;
+	status: string;
+	price: number;
+	timeSlot: TimeSlot;
+	customer: Customer;
+	doctor: Doctor;
+	pack: Pack;
+}
+
+export interface Diagnose {
+	id: number;
+	description: string;
+	order: OrderInfo;
+}

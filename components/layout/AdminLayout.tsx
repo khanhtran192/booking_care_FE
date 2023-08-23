@@ -6,6 +6,7 @@ import {
 	IdcardOutlined,
 	InsertRowLeftOutlined,
 	MedicineBoxOutlined,
+	SolutionOutlined,
 	UserOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
@@ -25,6 +26,11 @@ const menuItems: MenuProps["items"] = [
 		key: "info",
 		label: "Thông tin cá nhân",
 		icon: <IdcardOutlined />,
+	},
+	{
+		key: "orders",
+		label: "Đơn đặt khám",
+		icon: <SolutionOutlined />,
 	},
 	{
 		key: "manage",

@@ -1,4 +1,6 @@
-import { Col, Form, Input, Row, Upload } from "antd";
+import { Col, Form, Input, Row } from "antd";
+import { FormAvatar } from "../fields/avatar";
+import { FormEditor } from "../fields/editor";
 import FormPage, { FormPageProps } from "./FormPage";
 
 function HospitalForm(props: FormPageProps) {
@@ -6,7 +8,9 @@ function HospitalForm(props: FormPageProps) {
 		<FormPage {...props}>
 			<Row>
 				<Col span={8}>
-					<Upload />
+					<Form.Item name="logo">
+						<FormAvatar viewOnly={false} />
+					</Form.Item>
 				</Col>
 				<Col span={16}>
 					<div className="flex gap-4 [&>*]:flex-1">
@@ -26,7 +30,7 @@ function HospitalForm(props: FormPageProps) {
 						</Form.Item>
 					</div>
 					<Form.Item name="description" label="Mô tả">
-						<Input.TextArea rows={3} />
+						<FormEditor />
 					</Form.Item>
 				</Col>
 			</Row>

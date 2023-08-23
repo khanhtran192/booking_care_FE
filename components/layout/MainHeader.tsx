@@ -1,28 +1,11 @@
+import { deleteUser } from "@/axiosClient/userStore";
 import { useAuth } from "@/lib/AuthProvider";
 import { DownOutlined, UserOutlined } from "@ant-design/icons";
-import { Avatar, Button, Divider, Dropdown, MenuProps, Typography } from "antd";
+import { Avatar, Button, Divider, Dropdown, Typography } from "antd";
 import Link from "next/link";
+import { memo } from "react";
 import Logo from "../Logo";
 import AppContainer from "./AppContainer";
-
-const items: MenuProps["items"] = [
-	{
-		label: <Link href="/manage/info">Cập nhật thông tin</Link>,
-		key: "0",
-	},
-	{
-		label: <Link href="/manage/dashboard">Quản lý</Link>,
-		key: "1",
-	},
-	{
-		type: "divider",
-	},
-	{
-		label: "Đăng xuất",
-		danger: true,
-		key: "3",
-	},
-];
 
 function MainHeader() {
 	const { user, setUser } = useAuth();
@@ -61,12 +44,29 @@ function MainHeader() {
 							/>
 							<Dropdown
 								menu={{
-									items,
-									onSelect: ({ key }) => {
-										if (key === "3") {
-											setUser();
-										}
-									},
+									items: [
+										{
+											label: (
+												<Link href="/manage/info">Cập nhật thông tin</Link>
+											),
+											key: "0",
+										},
+										{
+											label: <Link href="/manage/dashboard">Quản lý</Link>,
+											key: "1",
+										},
+										{
+											type: "divider",
+										},
+										{
+											label: "Đăng xuất",
+											danger: true,
+											key: "3",
+											onClick: () => {
+												setUser();
+											},
+										},
+									],
 								}}
 								trigger={["click"]}>
 								<Typography.Link>
@@ -98,4 +98,4 @@ function MainHeader() {
 	);
 }
 
-export default MainHeader;
+export default memo(MainHeader);
