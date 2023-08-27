@@ -65,14 +65,14 @@ const Info: React.FC = () => {
 	//fetch data
 	useEffect(() => {
 		axiosAuth
-			.get(`/customers/${data.id}`)
+			.get(`/customers/${user?.userId}`)
 			.then((response) => {
 				setData(response as unknown as CustomerData);
 			})
 			.catch((error) => {
 				console.error("Error fetching data: ", error);
 			});
-	}, []);
+	}, [user?.userId]);
 
 	// Set form fields value when data changes
 	useEffect(() => {

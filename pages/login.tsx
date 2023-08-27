@@ -16,7 +16,7 @@ const LoginForm: React.FC = () => {
 		(values: any) =>
 			authApi.login(values).then((user) => {
 				setUser(user);
-				router.replace("/");
+				router.reload();
 			}),
 		[router, setUser]
 	);

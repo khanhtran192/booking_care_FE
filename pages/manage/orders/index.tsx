@@ -1,21 +1,16 @@
-import { manageHospitalApi } from "@/axiosClient/endpoints";
-import { Hospital } from "@/axiosClient/types";
+import { manageHospitalApi, orderApi } from "@/axiosClient/endpoints";
+import { Hospital, OrderInfo } from "@/axiosClient/types";
 import AdminTable from "@/components/AdminTable";
 import AdminLayout from "@/components/layout/AdminLayout";
 import { useAuth } from "@/lib/AuthProvider";
 import { renderImage } from "@/lib/renderUtils";
 import type { TableColumnsType } from "antd";
 
-const columns: TableColumnsType<Hospital> = [
+const columns: TableColumnsType<OrderInfo> = [
 	{
-		width: 50,
-		dataIndex: "logo",
-		render: renderImage,
-	},
-	{
-		title: "Tên",
-		dataIndex: "name",
-		key: "name",
+		title: "Ngày",
+		dataIndex: "date",
+		render: (date, { timeSlot }) => `${date} ${timeSlot.time}`,
 	},
 	{
 		title: "Địa chỉ",
@@ -23,14 +18,16 @@ const columns: TableColumnsType<Hospital> = [
 		key: "address",
 	},
 	{
-		title: "Email",
-		dataIndex: "email",
-		key: "email",
+		title: "Triệu chứng",
+		dataIndex: "symtom",
 	},
 	{
-		title: "Số điện thoại",
-		dataIndex: "phoneNumber",
-		key: "phone",
+		title: "Giá tiền",
+		dataIndex: "price",
+	},
+	{
+		title: "Trạng thái",
+		dataIndex: "status",
 	},
 ];
 
@@ -40,9 +37,7 @@ function ManageHospitalsPage() {
 		<AdminLayout>
 			<AdminTable
 				columns={columns}
-				getApi={(axiosAuth, query) =>
-					manageHospitalApi.getPacks(axiosAuth, user?.hospitalId, query)
-				}
+				getApi={(axiosAuth, query) => orderApi.getOrders(query)}
 			/>
 		</AdminLayout>
 	);

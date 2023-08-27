@@ -1,12 +1,10 @@
-import { hospitalApi, manageHospitalApi } from "@/axiosClient/endpoints";
-import { Department, Hospital } from "@/axiosClient/types";
-import { getUser } from "@/axiosClient/userStore";
+import { manageHospitalApi } from "@/axiosClient/endpoints";
+import { Department } from "@/axiosClient/types";
 import AdminTable from "@/components/AdminTable";
 import AdminLayout from "@/components/layout/AdminLayout";
+import { useAuth } from "@/lib/AuthProvider";
 import { renderImage } from "@/lib/renderUtils";
 import type { TableColumnsType } from "antd";
-import { getCookie } from "cookies-next";
-import { GetServerSideProps } from "next";
 
 const columns: TableColumnsType<Department> = [
 	{
@@ -19,51 +17,25 @@ const columns: TableColumnsType<Department> = [
 		dataIndex: "departmentName",
 		key: "name",
 	},
-	{
-		title: "Địa chỉ",
-		dataIndex: "address",
-		key: "address",
-	},
-	{
-		title: "Email",
-		dataIndex: "email",
-		key: "email",
-	},
-	{
-		title: "Số điện thoại",
-		dataIndex: "phoneNumber",
-		key: "phone",
-	},
 ];
 
-type Props = {
-	hospitals: Awaited<ReturnType<typeof manageHospitalApi.getDepartments>>;
-};
-
-export const getServerSideProps: GetServerSideProps<Props> = async ({
-	query,
-	res,
-	req,
-}) => {
-	console.log("getCookie :", getCookie("hospitalId", { res, req }));
-	console.log("getCookie :", getUser({ res, req }).id_token);
-
-	const hospitals = await manageHospitalApi.getDepartments(
-		getCookie("hospitalId", { res, req }) as string,
-		query
-	);
-	return {
-		props: {
-			hospitals,
-		},
-	};
-};
-
-function ManageHospitalsPage({ hospitals }: Props) {
-	const { data, ...rest } = hospitals;
+function ManageHospitalsPage() {
+	const { user } = useAuth();
 	return (
 		<AdminLayout>
-			<AdminTable columns={columns} dataSource={data} pagination={rest} />
+			<AdminTable
+				columns={columns}
+				getApi={(axiosAuth, query) =>
+					manageHospitalApi.getDepartments(axiosAuth, user?.hospitalId, query)
+				}
+				toggleApi={(axiosAuth, record) =>
+					manageHospitalApi.toggleDepartmentStatus(
+						axiosAuth,
+						record.id,
+						record.active
+					)
+				}
+			/>
 		</AdminLayout>
 	);
 }

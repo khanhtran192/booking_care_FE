@@ -43,12 +43,17 @@
 	@apply border-t-0;
 }
 
-.ant-btn-primary,
-[type="submit"] {
+.ant-btn {
+	@apply inline-flex items-center justify-center;
+}
+.ant-btn-primary {
 	background-color: #1677ff;
-	@apply flex items-center justify-center;
 }
 
 .ant-layout-sider-trigger {
 	@apply !bg-transparent !text-slate-900 shadow-inner;
+}
+
+.slick-dots.slick-dots-bottom {
+	@apply -bottom-3;
 }

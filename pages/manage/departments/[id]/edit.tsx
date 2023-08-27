@@ -1,5 +1,6 @@
 import { hospitalApi } from "@/axiosClient/endpoints";
 import { Hospital } from "@/axiosClient/types";
+import DepartmentForm from "@/components/form/DepartmentForm";
 import HospitalForm from "@/components/form/HospitalForm";
 import AdminLayout from "@/components/layout/AdminLayout";
 import { GetServerSideProps } from "next";
@@ -39,7 +40,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
 function EditHospital({ packList, departmentList, hospital }: Props) {
 	return (
 		<AdminLayout>
-			<HospitalForm initialValues={hospital} onFinish={console.log} />
+			<DepartmentForm initialValues={hospital} onFinish={console.log} />
 		</AdminLayout>
 	);
 }

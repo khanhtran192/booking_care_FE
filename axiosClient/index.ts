@@ -10,7 +10,7 @@ import { getCookie } from "cookies-next";
 import queryString from "query-string";
 
 const onResponse = (response: AxiosResponse) => {
-	if (response.status === 200) {
+	if (Math.floor(response.status / 100) === 2) {
 		return response.data;
 	}
 	return Promise.reject(response);
@@ -21,8 +21,8 @@ const onResponseError = (error: AxiosError): Promise<AxiosError> => {
 };
 
 const axiosDefault: CreateAxiosDefaults = {
-	// baseURL: "https://booking-care-be.loca.lt/api/",
-	baseURL: "http://localhost:3000/api/",
+	baseURL: "https://booking-care-be.loca.lt/api/",
+	// baseURL: "http://localhost:3000/api/",
 	//  baseURL: "http://192.168.1.43:8080/api/",
 	//baseURL: "http://localhost:8080/api/",
 	headers: {

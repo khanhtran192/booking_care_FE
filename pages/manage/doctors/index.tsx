@@ -1,15 +1,16 @@
-import { hospitalApi } from "@/axiosClient/endpoints";
+import { hospitalApi, manageHospitalApi } from "@/axiosClient/endpoints";
 import { Hospital } from "@/axiosClient/types";
 import AdminTable from "@/components/AdminTable";
 import AdminLayout from "@/components/layout/AdminLayout";
+import { useAuth } from "@/lib/AuthProvider";
 import { renderImage } from "@/lib/renderUtils";
-import type { TableColumnsType } from "antd";
+import { Rate, type TableColumnsType } from "antd";
 import { GetServerSideProps } from "next";
 
 const columns: TableColumnsType<Hospital> = [
 	{
 		width: 50,
-		dataIndex: "logo",
+		dataIndex: "avatar",
 		render: renderImage,
 	},
 	{
@@ -18,9 +19,9 @@ const columns: TableColumnsType<Hospital> = [
 		key: "name",
 	},
 	{
-		title: "Địa chỉ",
-		dataIndex: "address",
-		key: "address",
+		title: "Đánh giá",
+		dataIndex: "rate",
+		render: (rate) => <Rate value={rate} disabled />,
 	},
 	{
 		title: "Email",
@@ -32,28 +33,23 @@ const columns: TableColumnsType<Hospital> = [
 		dataIndex: "phoneNumber",
 		key: "phone",
 	},
+	{
+		title: "Chuyên khoa",
+		dataIndex: "department",
+		render: (department) => department?.departmentName,
+	},
 ];
 
-type Props = {
-	hospitals: Awaited<ReturnType<typeof hospitalApi.get>>;
-};
-
-export const getServerSideProps: GetServerSideProps<Props> = async ({
-	query,
-}) => {
-	const hospitals = await hospitalApi.get(query);
-	return {
-		props: {
-			hospitals,
-		},
-	};
-};
-
-function ManageHospitalsPage({ hospitals }: Props) {
-	const { data, ...rest } = hospitals;
+function ManageHospitalsPage() {
+	const { user } = useAuth();
 	return (
 		<AdminLayout>
-			<AdminTable columns={columns} dataSource={data} pagination={rest} />
+			<AdminTable
+				columns={columns}
+				getApi={(axiosAuth, query) =>
+					manageHospitalApi.getDoctors(axiosAuth, user?.hospitalId, query)
+				}
+			/>
 		</AdminLayout>
 	);
 }

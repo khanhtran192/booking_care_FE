@@ -1,66 +1,122 @@
-import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
-import { App, Button, Popconfirm, Table, TableProps } from "antd";
+import { PaginationData } from "@/axiosClient/types";
+import { useAuth } from "@/lib/AuthProvider";
+import {
+	CheckOutlined,
+	CloseOutlined,
+	EditOutlined,
+	PlusOutlined,
+} from "@ant-design/icons";
+import { App, Button, Popconfirm, Table, TableProps, Tag } from "antd";
+import { Axios } from "axios";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import queryString from "query-string";
-import React, { useMemo, useCallback } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export interface AdminTableProps<T extends object> extends TableProps<T> {
-	handleDelete?: (record: T) => Promise<void>;
+	getApi: (
+		axiosAuth: Axios,
+		query: Record<string, any>
+	) => Promise<PaginationData<T>>;
+	toggleApi?: (axiosAuth: Axios, record: T) => Promise<any>;
 }
 
 function AdminTable<T extends object>({
 	columns,
-	handleDelete,
 	pagination,
+	getApi,
+	toggleApi,
 	...props
 }: AdminTableProps<T>) {
 	const router = useRouter();
+	const { axiosAuth } = useAuth();
 	const { message } = App.useApp();
+
+	const [res, setRes] = useState<PaginationData<T>>({} as any);
+	const [loading, setLoading] = useState(false);
+	const { data, ...rest } = res;
+	useEffect(() => {
+		const fetchData = async () => {
+			setLoading(true);
+			try {
+				const response = await getApi(axiosAuth, router.query);
+				setRes(response);
+				setLoading(false);
+			} catch (error) {
+				setLoading(false);
+			}
+		};
+		fetchData();
+	}, [axiosAuth, getApi, router.query]);
 
 	const tableCols = useMemo(() => {
 		if (!columns) return [];
 
 		const newCols = [...columns];
-		newCols.push({
-			width: 100,
-			key: "action",
-			render: (_, record) => (
-				<>
-					<Link href={`${router.route}/${(record as any).id}/edit`}>
-						<Button icon={<EditOutlined />} type="link" />
-					</Link>
-					{typeof handleDelete === "function" && (
-						<Popconfirm
-							title="Xóa dữ liệu"
-							description="Bạn có chắc chắn muốn xóa bản ghi này?"
-							okText="Chắc chắn"
-							cancelText="Không"
-							onConfirm={async () => {
-								try {
-									await handleDelete(record);
-									message.success("Xóa dữ liệu thành công!");
-									router.reload();
-								} catch (error) {
-									message.error("Xóa dữ liệu thất bại!");
-								}
-							}}>
-							<Button icon={<DeleteOutlined />} danger type="link" />
-						</Popconfirm>
-					)}
-				</>
-			),
-		});
+		newCols.push(
+			{
+				title: "Trạng thái",
+				dataIndex: "active",
+				render: (active: boolean) => {
+					return (
+						<Tag color={active ? "success" : "error"}>
+							{active ? "Đang hoạt động" : "Đã vô hiệu hóa"}
+						</Tag>
+					);
+				},
+			},
+			{
+				width: 100,
+				key: "action",
+				render: (_, record: any) => {
+					const text = record.active ? "Vô hiệu hóa" : "Kích hoạt";
+					return (
+						<div className="flex">
+							<Link href={`${router.route}/${record.id}/edit`}>
+								<Button icon={<EditOutlined />} type="link" />
+							</Link>
+							{typeof toggleApi === "function" && (
+								<Popconfirm
+									title={text}
+									description="Bạn có chắc chắn không?"
+									okText="Có"
+									cancelText="Không"
+									onConfirm={async () => {
+										try {
+											await toggleApi(axiosAuth, record);
+											message.success(text + " thành công!");
+											router.reload();
+										} catch (error) {
+											console.log("error :", error);
+											message.error(text + " thất bại!");
+										}
+									}}>
+									{record.active ? (
+										<Button icon={<CloseOutlined />} danger type="link" />
+									) : (
+										<Button
+											icon={<CheckOutlined />}
+											type="link"
+											color="success"
+										/>
+									)}
+								</Popconfirm>
+							)}
+						</div>
+					);
+				},
+			}
+		);
 		return newCols;
-	}, [columns, handleDelete, message, router]);
+	}, [axiosAuth, columns, message, router, toggleApi]);
 
 	const tablePagination = useMemo(() => {
 		return {
 			showQuickJumper: true,
 			showSizeChanger: true,
-			...pagination,
+			...rest,
 		};
-	}, []);
+	}, [rest]);
 
 	const handleTableChange = useCallback<
 		NonNullable<AdminTableProps<T>["onChange"]>
@@ -98,6 +154,8 @@ function AdminTable<T extends object>({
 				onChange={handleTableChange}
 				columns={tableCols}
 				pagination={tablePagination}
+				loading={loading}
+				dataSource={data}
 				{...props}
 			/>
 		</div>

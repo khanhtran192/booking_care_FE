@@ -17,8 +17,9 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
 
 	useEffect(() => {
 		const user = getUser();
+		console.log("user :", user);
 		if (user.id_token) {
-			setUser(user);
+			setStateUser(user);
 		}
 	}, []);
 

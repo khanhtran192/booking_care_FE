@@ -1,10 +1,9 @@
-import { hospitalApi } from "@/axiosClient/endpoints";
+import { adminManageApi } from "@/axiosClient/endpoints";
 import { Hospital } from "@/axiosClient/types";
 import AdminTable from "@/components/AdminTable";
 import AdminLayout from "@/components/layout/AdminLayout";
 import { renderImage } from "@/lib/renderUtils";
 import type { TableColumnsType } from "antd";
-import { GetServerSideProps } from "next";
 
 const columns: TableColumnsType<Hospital> = [
 	{
@@ -34,26 +33,20 @@ const columns: TableColumnsType<Hospital> = [
 	},
 ];
 
-type Props = {
-	hospitals: Awaited<ReturnType<typeof hospitalApi.get>>;
-};
-
-export const getServerSideProps: GetServerSideProps<Props> = async ({
-	query,
-}) => {
-	const hospitals = await hospitalApi.get(query);
-	return {
-		props: {
-			hospitals,
-		},
-	};
-};
-
-function ManageHospitalsPage({ hospitals }: Props) {
-	const { data, ...rest } = hospitals;
+function ManageHospitalsPage() {
 	return (
 		<AdminLayout>
-			<AdminTable columns={columns} dataSource={data} pagination={rest} />
+			<AdminTable
+				getApi={adminManageApi.getHospitals}
+				toggleApi={(axiosAuth, record) =>
+					adminManageApi.toggleHospitalStatus(
+						axiosAuth,
+						record.id,
+						record.active
+					)
+				}
+				columns={columns}
+			/>
 		</AdminLayout>
 	);
 }

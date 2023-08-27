@@ -1,3 +1,5 @@
+import { AppPaginationProps } from "@/components/CardList/ListPagination";
+
 export type Hospital = {
 	id: number;
 	name: string;
@@ -8,6 +10,7 @@ export type Hospital = {
 	backgroundImage?: string;
 	type: string;
 	description: string;
+	active: boolean;
 };
 
 export interface Department {
@@ -31,6 +34,7 @@ export interface Doctor {
 	star: number;
 	specialize: string;
 	department: Department;
+	active: boolean;
 }
 
 export interface Pack {
@@ -40,6 +44,7 @@ export interface Pack {
 	logo: string;
 	price: string;
 	hospital: Hospital;
+	active: boolean;
 }
 
 export type TimeSlot = {
@@ -57,6 +62,7 @@ export type TimeSlot = {
 	};
 	description: string;
 	price: number;
+	active: boolean;
 };
 
 interface Sort {
@@ -132,4 +138,12 @@ export interface Diagnose {
 	id: number;
 	description: string;
 	order: OrderInfo;
+}
+
+export interface PaginationData<T>
+	extends Pick<
+		AppPaginationProps,
+		"defaultCurrent" | "defaultPageSize" | "total"
+	> {
+	data: T[];
 }

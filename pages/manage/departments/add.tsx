@@ -1,4 +1,4 @@
-import HospitalForm from "@/components/form/HospitalForm";
+import DepartmentForm from "@/components/form/DepartmentForm";
 import AdminLayout from "@/components/layout/AdminLayout";
 
 type Props = {};
@@ -6,7 +6,7 @@ type Props = {};
 function AddHospital({}: Props) {
 	return (
 		<AdminLayout>
-			<HospitalForm />
+			<DepartmentForm />
 		</AdminLayout>
 	);
 }

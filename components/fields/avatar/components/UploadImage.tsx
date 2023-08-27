@@ -12,11 +12,13 @@ export const dummyRequest = ({ onSuccess }: UploadRequestOption) => {
 
 interface UploadImageProps extends UploadProps {
 	onUpload?: (objValue?: ImageValue) => void;
+	aspect?: number;
 }
 
 export const UploadImage = ({
 	children,
 	onUpload,
+	aspect,
 	...rest
 }: UploadImageProps) => {
 	const { message } = App.useApp();
@@ -34,7 +36,7 @@ export const UploadImage = ({
 	};
 
 	return (
-		<ImgCrop rotationSlider>
+		<ImgCrop rotationSlider aspect={aspect}>
 			<Upload
 				showUploadList={false}
 				customRequest={dummyRequest}

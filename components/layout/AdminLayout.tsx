@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useMemo } from "react";
 import MainHeader from "@/components/layout/MainHeader";
 import {
 	BankOutlined,
@@ -13,53 +13,73 @@ import type { MenuProps } from "antd";
 import { Layout, Menu, theme } from "antd";
 import { useRouter } from "next/router";
 import { useAuth } from "@/lib/AuthProvider";
+import { UserInfo } from "@/axiosClient/types";
+import { ROLE } from "@/axiosClient/utils";
+import { getUser } from "@/axiosClient/userStore";
 
 const { Content, Sider } = Layout;
 
-const menuItems: MenuProps["items"] = [
-	{
-		key: "dashboard",
-		label: "Dashboard",
-		icon: <DashboardOutlined />,
-	},
-	{
-		key: "info",
-		label: "Thông tin cá nhân",
-		icon: <IdcardOutlined />,
-	},
-	{
-		key: "orders",
-		label: "Đơn đặt khám",
-		icon: <SolutionOutlined />,
-	},
-	{
-		key: "manage",
-		type: "group",
-		label: "Quản lý",
-		children: [
-			{
-				key: "hospitals",
-				label: "Bệnh viện",
-				icon: <BankOutlined />,
-			},
-			{
-				key: "departments",
-				label: "Chuyên khoa",
-				icon: <InsertRowLeftOutlined />,
-			},
-			{
-				key: "doctors",
-				label: "Bác sĩ",
-				icon: <UserOutlined />,
-			},
-			{
-				key: "packs",
-				label: "Gói khám",
-				icon: <MedicineBoxOutlined />,
-			},
-		],
-	},
-];
+const getMenuItems = (user: UserInfo) => {
+	const menuItems: MenuProps["items"] = [
+		{
+			key: "dashboard",
+			label: "Dashboard",
+			icon: <DashboardOutlined />,
+		},
+		{
+			key: "info",
+			label: "Thông tin cá nhân",
+			icon: <IdcardOutlined />,
+		},
+		{
+			key: "orders",
+			label: "Đơn đặt khám",
+			icon: <SolutionOutlined />,
+		},
+	];
+
+	if (user.authorities.includes(ROLE.ADMIN)) {
+		menuItems[3] = {
+			key: "manage",
+			type: "group",
+			label: "Quản lý",
+			children: [
+				{
+					key: "hospitals",
+					label: "Bệnh viện",
+					icon: <BankOutlined />,
+				},
+			],
+		};
+	}
+
+	if (user.hospitalId) {
+		menuItems[3] = {
+			key: "manage",
+			type: "group",
+			label: "Quản lý",
+			children: [
+				{
+					key: "departments",
+					label: "Chuyên khoa",
+					icon: <InsertRowLeftOutlined />,
+				},
+				{
+					key: "doctors",
+					label: "Bác sĩ",
+					icon: <UserOutlined />,
+				},
+				{
+					key: "packs",
+					label: "Gói khám",
+					icon: <MedicineBoxOutlined />,
+				},
+			],
+		};
+	}
+
+	return menuItems;
+};
 
 type AdminLayoutProps = {
 	children: ReactNode;
@@ -74,10 +94,17 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
 	const defaultSelectedKeys = [router.pathname.split("/")[2] || "dashboard"];
 
 	useEffect(() => {
-		if (!user) {
-			router.replace("/login");
+		if (!getUser().id_token) {
+			router.replace("/login", {
+				query: {},
+			});
 		}
 	}, [router, user]);
+
+	const menuItems = useMemo(() => {
+		if (!user) return [];
+		return getMenuItems(user);
+	}, [user]);
 
 	return (
 		<Layout className="h-screen">

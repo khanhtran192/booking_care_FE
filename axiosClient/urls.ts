@@ -4,3 +4,10 @@ export const PACKS = "/packs";
 export const DEPARTMENTS = "/departments";
 export const ORDERS = "/orders";
 export const TIME_SLOTS = "/time-slots";
+
+export const MANAGE_API = {
+	DEPARTMENTS: `${HOSPITALS}/manage${DEPARTMENTS}`,
+	DOCTORS: `${HOSPITALS}/manage${DOCTORS}`,
+	PACKS: `${HOSPITALS}/manage${PACKS}`,
+	TIME_SLOTS: `${HOSPITALS}/manage${PACKS}${TIME_SLOTS}`,
+};

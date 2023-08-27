@@ -18,11 +18,13 @@ import {
 	DEPARTMENTS,
 	DOCTORS,
 	HOSPITALS,
+	MANAGE_API,
 	ORDERS,
 	PACKS,
 	TIME_SLOTS,
 } from "./urls";
 import { convertApiResponseToAppPagination } from "./utils";
+import axios, { Axios } from "axios";
 
 export type GetParamsType = {
 	size?: number;
@@ -92,7 +94,9 @@ export const authApi = {
 
 export const orderApi = {
 	getOrders: (params?: GetParamsType) =>
-		axiosClient.get(ORDERS + "/personal", { params }) as Promise<OrderInfo[]>,
+		axiosClient
+			.get(ORDERS + "/personal", { params })
+			.then((data: any) => convertApiResponseToAppPagination<OrderInfo>(data)),
 	getOrderById: (id: number | string) =>
 		axiosClient.get(`${ORDERS}/${id}`) as Promise<OrderInfo>,
 	editOrder: (id: number | string, data: any) =>
@@ -102,25 +106,62 @@ export const orderApi = {
 		axiosClient.get(`/order/${id}/diagnose`) as Promise<Diagnose>,
 };
 
+export const adminManageApi = {
+	getHospitals: (axiosAuth: Axios, params?: GetParamsType) =>
+		axiosAuth
+			.get(`${HOSPITALS}/manage`, { params })
+			.then((data: any) => convertApiResponseToAppPagination<Hospital>(data)),
+	getHospitalById: hospitalApi.getById,
+	toggleHospitalStatus: (
+		axiosAuth: Axios,
+		id: number | string,
+		active?: boolean
+	) => {
+		return active
+			? axiosAuth.delete(`${HOSPITALS}/manage/inactive/${id}`)
+			: axiosAuth.put(`${HOSPITALS}/manage/hospital/${id}/active`);
+	},
+};
+
 export const manageHospitalApi = {
-	getPacks: (id: number | string, params?: GetParamsType) =>
-		axiosClient
+	getPacks: (axiosAuth: Axios, id: number | string, params?: GetParamsType) =>
+		axiosAuth
 			.get(`${HOSPITALS}/${id}/manage${PACKS}`, { params })
 			.then((data: any) => convertApiResponseToAppPagination<Pack>(data)),
-	getDoctors: (id: number | string, params?: GetParamsType) =>
-		axiosClient
+	getDoctors: (axiosAuth: Axios, id: number | string, params?: GetParamsType) =>
+		axiosAuth
 			.get(`${HOSPITALS}/${id}/manage${DOCTORS}`, { params })
 			.then((data: any) => convertApiResponseToAppPagination<Doctor>(data)),
-	getDepartments: (id: number | string, params?: GetParamsType) =>
-		axiosClient
+	getDepartments: (
+		axiosAuth: Axios,
+		id: number | string,
+		params?: GetParamsType
+	) =>
+		axiosAuth
 			.get(`${HOSPITALS}/${id}/manage${DEPARTMENTS}`, { params })
 			.then((data: any) => convertApiResponseToAppPagination<Department>(data)),
-	getCustomers: (id: number | string, params?: GetParamsType) =>
-		axiosClient
+	getCustomers: (
+		axiosAuth: Axios,
+		id: number | string,
+		params?: GetParamsType
+	) =>
+		axiosAuth
 			.get(`${HOSPITALS}/${id}/manage/customer`, { params })
 			.then((data: any) => convertApiResponseToAppPagination<Customer>(data)),
-	getPackTimeSlots: (id: number | string, params?: GetParamsType) =>
-		axiosClient.get(`${HOSPITALS}/manage${PACKS}${id}${TIME_SLOTS}`, {
+	getPackTimeSlots: (
+		axiosAuth: Axios,
+		id: number | string,
+		params?: GetParamsType
+	) =>
+		axiosAuth.get(`${MANAGE_API.PACKS}/${id}${TIME_SLOTS}`, {
 			params,
 		}) as Promise<TimeSlot>,
+	toggleDepartmentStatus: (
+		axiosAuth: Axios,
+		id: number | string,
+		active: boolean
+	) =>
+		active
+			? axiosAuth.delete(`${MANAGE_API.DEPARTMENTS}/${id}/inactive`)
+			: axiosAuth.put(`${MANAGE_API.DEPARTMENTS}/${id}/active`),
 };

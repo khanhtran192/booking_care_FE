@@ -17,7 +17,16 @@ export const userInfoKeys: UserInfoKey[] = [
 export const getUser = (ctx?: OptionsType) => {
 	const user = {} as UserInfo;
 	userInfoKeys.forEach((key) => {
-		user[key] = decodeURI(getCookie(key, ctx) as string) as never;
+		let storedValue = decodeURI(getCookie(key, ctx) as string);
+		try {
+			storedValue =
+				storedValue === "undefined" ? undefined : JSON.parse(storedValue);
+		} catch (error) {
+			storedValue = storedValue;
+		}
+		if (storedValue) {
+			user[key] = storedValue as never;
+		}
 	});
 	return user as unknown as UserInfo;
 };
