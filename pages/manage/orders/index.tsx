@@ -1,9 +1,8 @@
-import { manageHospitalApi, orderApi } from "@/axiosClient/endpoints";
-import { Hospital, OrderInfo } from "@/axiosClient/types";
+import { orderApi } from "@/axiosClient/endpoints";
+import { OrderInfo } from "@/axiosClient/types";
 import AdminTable from "@/components/AdminTable";
 import AdminLayout from "@/components/layout/AdminLayout";
 import { useAuth } from "@/lib/AuthProvider";
-import { renderImage } from "@/lib/renderUtils";
 import type { TableColumnsType } from "antd";
 
 const columns: TableColumnsType<OrderInfo> = [

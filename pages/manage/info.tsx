@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Button, DatePicker, Form, Input, Select, message } from "antd";
-import dayjs from "dayjs";
-import type { Dayjs } from "dayjs";
 import Logo from "@/components/Logo";
-import axiosClient from "@/axiosClient";
-import { useAuth } from "@/lib/AuthProvider";
+import AppDatePicker from "@/components/fields/AppDatePicker";
 import AdminLayout from "@/components/layout/AdminLayout";
+import { useAuth } from "@/lib/AuthProvider";
+import { Button, Form, Input, Select, message } from "antd";
+import React, { useEffect, useState } from "react";
 
 const { Option } = Select;
 
@@ -72,34 +70,20 @@ const Info: React.FC = () => {
 			.catch((error) => {
 				console.error("Error fetching data: ", error);
 			});
-	}, [user?.userId]);
+	}, [axiosAuth, user?.userId]);
 
 	// Set form fields value when data changes
 	useEffect(() => {
-		form.setFieldsValue({
-			fullName: data?.fullName,
-			address: data?.address,
-			dateOfBirth: data?.dateOfBirth ? dayjs(data.dateOfBirth) : null,
-			phoneNumber: data?.phoneNumber,
-			idCard: data?.idCard,
-			gender: data?.gender,
-		});
+		form.setFieldsValue({ ...data });
 	}, [data, form]);
 
 	const onFinish = (values: any) => {
-		// format the dateOfBirth value using date.js
-		const formattedDateOfBirth = dayjs(values.dateOfBirth).format("YYYY-MM-DD");
-		const dataToSend = {
-			...values,
-			dateOfBirth: formattedDateOfBirth,
-		};
-
 		try {
-			if (!data?.id) {
-				axiosAuth.post("/customers", dataToSend);
+			if (!user?.userId) {
+				axiosAuth.post("/customers", values);
 				message.success("Thêm thông tin thành công");
 			} else {
-				axiosAuth.put(`customers/${data?.id}`, dataToSend);
+				axiosAuth.put(`customers/${user?.userId}`, values);
 				message.success("Cập nhật thông tin thành công");
 			}
 		} catch (error) {
@@ -180,7 +164,7 @@ const Info: React.FC = () => {
 				</Form.Item>
 
 				<Form.Item name="dateOfBirth" label="Ngày sinh" {...config}>
-					<DatePicker className="w-full" />
+					<AppDatePicker />
 				</Form.Item>
 				{/*<Form.Item*/}
 				{/*  name="email"*/}
