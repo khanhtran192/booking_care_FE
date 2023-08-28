@@ -3,6 +3,7 @@ import MainHeader from "@/components/layout/MainHeader";
 import {
 	BankOutlined,
 	DashboardOutlined,
+	FieldTimeOutlined,
 	IdcardOutlined,
 	InsertRowLeftOutlined,
 	MedicineBoxOutlined,
@@ -73,6 +74,31 @@ const getMenuItems = (user: UserInfo) => {
 					key: "packs",
 					label: "Gói khám",
 					icon: <MedicineBoxOutlined />,
+				},
+				{
+					key: "request-orders",
+					label: "Yêu cầu khám bệnh",
+					icon: <SolutionOutlined />,
+				},
+			],
+		};
+	}
+
+	if (user.authorities.includes(ROLE.DOCTOR)) {
+		menuItems[3] = {
+			key: "manage",
+			type: "group",
+			label: "Quản lý",
+			children: [
+				{
+					key: "time-slots",
+					label: "Ca khám",
+					icon: <FieldTimeOutlined />,
+				},
+				{
+					key: "request-orders",
+					label: "Yêu cầu khám bệnh",
+					icon: <SolutionOutlined />,
 				},
 			],
 		};

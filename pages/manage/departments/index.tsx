@@ -1,4 +1,7 @@
-import { manageHospitalApi } from "@/axiosClient/endpoints";
+import {
+	manageDepartmentApi,
+	manageHospitalApi,
+} from "@/axiosClient/endpoints";
 import { Department } from "@/axiosClient/types";
 import AdminTable from "@/components/AdminTable";
 import AdminLayout from "@/components/layout/AdminLayout";
@@ -26,13 +29,17 @@ function ManageHospitalsPage() {
 			<AdminTable
 				columns={columns}
 				getApi={(axiosAuth, query) =>
-					manageHospitalApi.getDepartments(axiosAuth, user?.hospitalId, query)
+					manageHospitalApi.getDepartments(
+						axiosAuth,
+						user?.hospitalId as any,
+						query
+					)
 				}
 				toggleApi={(axiosAuth, record) =>
-					manageHospitalApi.toggleDepartmentStatus(
+					manageDepartmentApi.toggleStatus(
 						axiosAuth,
 						record.id,
-						record.active
+						record.active as boolean
 					)
 				}
 			/>

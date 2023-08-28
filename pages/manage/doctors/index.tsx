@@ -1,13 +1,12 @@
-import { hospitalApi, manageHospitalApi } from "@/axiosClient/endpoints";
-import { Hospital } from "@/axiosClient/types";
+import { manageDoctorApi, manageHospitalApi } from "@/axiosClient/endpoints";
+import { Doctor } from "@/axiosClient/types";
 import AdminTable from "@/components/AdminTable";
 import AdminLayout from "@/components/layout/AdminLayout";
 import { useAuth } from "@/lib/AuthProvider";
 import { renderImage } from "@/lib/renderUtils";
 import { Rate, type TableColumnsType } from "antd";
-import { GetServerSideProps } from "next";
 
-const columns: TableColumnsType<Hospital> = [
+const columns: TableColumnsType<Doctor> = [
 	{
 		width: 50,
 		dataIndex: "avatar",
@@ -20,8 +19,8 @@ const columns: TableColumnsType<Hospital> = [
 	},
 	{
 		title: "Đánh giá",
-		dataIndex: "rate",
-		render: (rate) => <Rate value={rate} disabled />,
+		dataIndex: "star",
+		render: (star) => <Rate value={star} disabled />,
 	},
 	{
 		title: "Email",
@@ -40,18 +39,25 @@ const columns: TableColumnsType<Hospital> = [
 	},
 ];
 
-function ManageHospitalsPage() {
+function ManageDoctorsPage() {
 	const { user } = useAuth();
 	return (
 		<AdminLayout>
 			<AdminTable
 				columns={columns}
 				getApi={(axiosAuth, query) =>
-					manageHospitalApi.getDoctors(axiosAuth, user?.hospitalId, query)
+					manageHospitalApi.getDoctors(
+						axiosAuth,
+						user?.hospitalId as any,
+						query
+					)
+				}
+				toggleApi={(axiosAuth, record) =>
+					manageDoctorApi.toggleStatus(axiosAuth, record.id, record.active)
 				}
 			/>
 		</AdminLayout>
 	);
 }
 
-export default ManageHospitalsPage;
+export default ManageDoctorsPage;

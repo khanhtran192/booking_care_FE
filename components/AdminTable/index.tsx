@@ -19,6 +19,7 @@ export interface AdminTableProps<T extends object> extends TableProps<T> {
 		query: Record<string, any>
 	) => Promise<PaginationData<T>>;
 	toggleApi?: (axiosAuth: Axios, record: T) => Promise<any>;
+	creatable?: boolean;
 }
 
 function AdminTable<T extends object>({
@@ -26,6 +27,7 @@ function AdminTable<T extends object>({
 	pagination,
 	getApi,
 	toggleApi,
+	creatable = true,
 	...props
 }: AdminTableProps<T>) {
 	const router = useRouter();
@@ -34,7 +36,6 @@ function AdminTable<T extends object>({
 
 	const [res, setRes] = useState<PaginationData<T>>({} as any);
 	const [loading, setLoading] = useState(false);
-	const { data, ...rest } = res;
 	useEffect(() => {
 		const fetchData = async () => {
 			setLoading(true);
@@ -110,13 +111,23 @@ function AdminTable<T extends object>({
 		return newCols;
 	}, [axiosAuth, columns, message, router, toggleApi]);
 
-	const tablePagination = useMemo(() => {
-		return {
-			showQuickJumper: true,
-			showSizeChanger: true,
-			...rest,
-		};
-	}, [rest]);
+	const tableProps = useMemo(() => {
+		const newProps: any = { ...props };
+		if (!pagination) {
+			newProps.pagination = false;
+			newProps.dataSource = Array.isArray(res) ? res : undefined;
+		} else {
+			const { data, ...rest } = res;
+			newProps.pagination = {
+				...pagination,
+				showQuickJumper: true,
+				showSizeChanger: true,
+				...rest,
+			};
+			newProps.dataSource = data;
+		}
+		return newProps;
+	}, [props, res]);
 
 	const handleTableChange = useCallback<
 		NonNullable<AdminTableProps<T>["onChange"]>
@@ -140,23 +151,23 @@ function AdminTable<T extends object>({
 	return (
 		<div>
 			<div className="">
-				<Button
-					icon={<PlusOutlined />}
-					type="primary"
-					className="mb-4"
-					onClick={() => {
-						router.push(`${router.route}/add`);
-					}}>
-					Create
-				</Button>
+				{creatable && (
+					<Button
+						icon={<PlusOutlined />}
+						type="primary"
+						className="mb-4"
+						onClick={() => {
+							router.push(`${router.route}/add`);
+						}}>
+						Create
+					</Button>
+				)}
 			</div>
 			<Table
 				onChange={handleTableChange}
 				columns={tableCols}
-				pagination={tablePagination}
 				loading={loading}
-				dataSource={data}
-				{...props}
+				{...tableProps}
 			/>
 		</div>
 	);

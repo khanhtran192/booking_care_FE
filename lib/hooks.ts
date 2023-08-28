@@ -1,6 +1,7 @@
 import axiosClient from "@/axiosClient";
 import useSWR from "swr";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useAuth } from "./AuthProvider";
 
 const fetcher = (params?: Record<string, any>) => (url: string) =>
 	axiosClient.get(url, { params }) as any;
@@ -31,4 +32,29 @@ export const usePost = <T extends (...arg: any[]) => Promise<any>>(api: T) => {
 		}),
 		[loading, postFunction]
 	);
+};
+
+export const useAuthFetch = <T>(url: string, params?: Record<string, any>) => {
+	const { axiosAuth } = useAuth();
+	const [loading, setLoading] = useState(false);
+	const [data, setData] = useState<T>();
+
+	useEffect(() => {
+		(async () => {
+			setLoading(true);
+			try {
+				const data = (await axiosAuth.get(url, { params })) as T;
+				setLoading(false);
+				setData(data);
+			} catch (e) {
+				console.log("error", e);
+				setLoading(false);
+			}
+		})();
+	}, [axiosAuth, params, url]);
+
+	return {
+		loading,
+		data,
+	};
 };

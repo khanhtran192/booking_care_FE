@@ -119,6 +119,7 @@ export interface Customer {
 	address: string;
 	phoneNumber: string;
 	email: string;
+	gender: string;
 }
 
 export interface OrderInfo {
@@ -147,3 +148,25 @@ export interface PaginationData<T>
 	> {
 	data: T[];
 }
+
+export type CMNDRes = {
+	errorCode: number;
+	errorMessage: string;
+	data: {
+		id: string;
+		name: string;
+		dob: string;
+		sex: string;
+		nationality: string;
+		type_new: string;
+		doe: string;
+		home: string;
+		address: string;
+		address_entities: {
+			province: string;
+			district: string;
+			ward: string;
+			street: string;
+		};
+	}[];
+};

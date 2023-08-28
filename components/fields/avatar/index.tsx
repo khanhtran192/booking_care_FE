@@ -11,9 +11,15 @@ interface FormAvatarProps {
 	value?: ImageValue;
 	onChange?: (value?: ImageValue) => void;
 	className?: string;
+	width: number;
+	height: number;
 }
 
-export const FormAvatar = ({ value, onChange, className }: FormAvatarProps) => {
+export const FormAvatar = ({
+	value,
+	onChange,
+	className,
+}: Omit<FormAvatarProps, "height" | "width">) => {
 	const calculateValue = useMemo(() => {
 		if (!value) return defaultAvatar;
 		if (typeof value === "object") return value.src;
@@ -51,10 +57,15 @@ export const FormAvatar = ({ value, onChange, className }: FormAvatarProps) => {
 	);
 };
 
-export const BgUpload = ({ value, className, onChange }: FormAvatarProps) => {
+export const BgUpload = ({
+	value,
+	className,
+	onChange,
+	width,
+	height,
+}: FormAvatarProps) => {
 	const calculateValue = useMemo(() => {
-		if (!value) return defaultAvatar;
-		if (typeof value === "object") return value.src;
+		if (value && typeof value === "object") return value.src;
 		return value;
 	}, [value]);
 
@@ -62,13 +73,14 @@ export const BgUpload = ({ value, className, onChange }: FormAvatarProps) => {
 		<div className={cn("group relative w-full overflow-hidden", className)}>
 			<Image
 				className="shadow-xl"
-				width={1800}
-				height={600}
-				src={calculateValue}
+				width={width}
+				height={height}
+				src={calculateValue ?? "/placeholder.webp"}
+				objectFit="cover"
 				alt="user avatar"
 			/>
 			<div className="absolute bottom-4 right-4 border-gray-500 shadow rounded p-4 bg-white invisible transition-all group-hover:visible flex items-center justify-center">
-				<UploadImage aspect={3} onUpload={onChange}>
+				<UploadImage aspect={width / height} onUpload={onChange}>
 					<Button icon={<EditOutlined />} type="link" />
 				</UploadImage>
 

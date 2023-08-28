@@ -2,6 +2,7 @@ import axiosClient from ".";
 import { setToken } from "./userStore";
 import {
 	ApiResponse,
+	CMNDRes,
 	Customer,
 	Department,
 	Diagnose,
@@ -93,17 +94,18 @@ export const authApi = {
 };
 
 export const orderApi = {
-	getOrders: (params?: GetParamsType) =>
-		axiosClient
+	getOrders: (axiosAuth: Axios, params?: GetParamsType) =>
+		axiosAuth
 			.get(ORDERS + "/personal", { params })
 			.then((data: any) => convertApiResponseToAppPagination<OrderInfo>(data)),
-	getOrderById: (id: number | string) =>
-		axiosClient.get(`${ORDERS}/${id}`) as Promise<OrderInfo>,
-	editOrder: (id: number | string, data: any) =>
-		axiosClient.put(`/order/${id}`, data),
-	cancel: (id: number | string) => axiosClient.put(`/order/${id}/cancel`),
-	getDiagnose: (id: number | string) =>
-		axiosClient.get(`/order/${id}/diagnose`) as Promise<Diagnose>,
+	getOrderById: (axiosAuth: Axios, id: number | string) =>
+		axiosAuth.get(`${ORDERS}/${id}`) as Promise<OrderInfo>,
+	editOrder: (axiosAuth: Axios, id: number | string, data: any) =>
+		axiosAuth.put(`/order/${id}`, data),
+	cancel: (axiosAuth: Axios, id: number | string) =>
+		axiosAuth.put(`/order/${id}/cancel`),
+	getDiagnose: (axiosAuth: Axios, id: number | string) =>
+		axiosAuth.get(`/order/${id}/diagnose`) as Promise<Diagnose>,
 };
 
 export const adminManageApi = {
@@ -156,12 +158,71 @@ export const manageHospitalApi = {
 		axiosAuth.get(`${MANAGE_API.PACKS}/${id}${TIME_SLOTS}`, {
 			params,
 		}) as Promise<TimeSlot>,
-	toggleDepartmentStatus: (
-		axiosAuth: Axios,
-		id: number | string,
-		active: boolean
-	) =>
+};
+
+export const manageDepartmentApi = {
+	getById: (axiosAuth: Axios, id: number | string) => {
+		return axiosAuth.get(
+			`${MANAGE_API.DEPARTMENTS}/${id}`
+		) as Promise<Department>;
+	},
+	toggleStatus: (axiosAuth: Axios, id: number | string, active: boolean) =>
 		active
 			? axiosAuth.delete(`${MANAGE_API.DEPARTMENTS}/${id}/inactive`)
 			: axiosAuth.put(`${MANAGE_API.DEPARTMENTS}/${id}/active`),
 };
+
+export const managePackApi = {
+	getById: (axiosAuth: Axios, id: number | string) =>
+		axiosAuth.get(`${MANAGE_API.PACKS}/${id}`) as Promise<Pack>,
+	toggleStatus: (axiosAuth: Axios, id: number | string, active: boolean) =>
+		active
+			? axiosAuth.delete(`${MANAGE_API.PACKS}/${id}/inactive`)
+			: axiosAuth.put(`${MANAGE_API.PACKS}/${id}/active`),
+	getTimeSlots: (
+		axiosAuth: Axios,
+		id: number | string,
+		params?: GetParamsType
+	) =>
+		axiosAuth.get(`${MANAGE_API.PACKS}/${id}${TIME_SLOTS}`, {
+			params,
+		}) as Promise<TimeSlot[]>,
+};
+
+export const manageDoctorApi = {
+	getById: (axiosAuth: Axios, id: number | string) =>
+		axiosAuth.get(`${MANAGE_API.DOCTORS}/${id}`) as Promise<Doctor>,
+	toggleStatus: (axiosAuth: Axios, id: number | string, active: boolean) =>
+		active
+			? axiosAuth.delete(`${MANAGE_API.DOCTORS}/${id}/inactive`)
+			: axiosAuth.put(`${MANAGE_API.DOCTORS}/${id}/active`),
+};
+
+export const readIdCard = (image: File) => {
+	const formData = new FormData();
+	formData.append("image", image);
+	return axios
+		.post("https://api.fpt.ai/vision/idr/vnm", formData, {
+			headers: {
+				"api-key": "y3RkEUnqyyDxevH8VvjjngoketMkUsBh",
+				"Content-Type": "multipart/form-data",
+			},
+		})
+		.then((res) => {
+			const data = res.data as CMNDRes;
+			if (data.errorMessage) {
+				return Promise.reject(data.errorMessage);
+			}
+			return Promise.resolve(data.data[0]);
+		});
+};
+
+export function uploadImage(axiosAuth: Axios, url: string, file: File) {
+	const formData = new FormData();
+	formData.append("file", file);
+	return axiosAuth.post(url, formData, {
+		headers: {
+			"Content-Type": "multipart/form-data",
+		},
+	});
+}

@@ -1,14 +1,14 @@
-import HospitalForm from "@/components/form/HospitalForm";
+import PackForm from "@/components/form/PackForm";
 import AdminLayout from "@/components/layout/AdminLayout";
 
 type Props = {};
 
-function AddHospital({}: Props) {
+function AddPack({}: Props) {
 	return (
 		<AdminLayout>
-			<HospitalForm />
+			<PackForm />
 		</AdminLayout>
 	);
 }
 
-export default AddHospital;
+export default AddPack;

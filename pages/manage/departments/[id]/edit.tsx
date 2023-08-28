@@ -1,46 +1,28 @@
-import { hospitalApi } from "@/axiosClient/endpoints";
-import { Hospital } from "@/axiosClient/types";
+import { departmentApi } from "@/axiosClient/endpoints";
+import { Department } from "@/axiosClient/types";
 import DepartmentForm from "@/components/form/DepartmentForm";
-import HospitalForm from "@/components/form/HospitalForm";
 import AdminLayout from "@/components/layout/AdminLayout";
 import { GetServerSideProps } from "next";
 
-type Props = {
-	packList: Awaited<ReturnType<typeof hospitalApi.getPackages>>;
-	departmentList: Awaited<ReturnType<typeof hospitalApi.getDepartments>>;
-	hospital: Hospital;
+type EditDepartmentProps = {
+	department: Department;
 };
 
-export const getServerSideProps: GetServerSideProps<Props> = async ({
-	query,
-	params,
-}) => {
-	const queryParams = { ...query } as Record<string, any>;
-	const hospital = await hospitalApi.getById(params?.id as string);
-	const packList = await hospitalApi.getPackages(params?.id as string, {
-		page: queryParams.packPage,
-		size: queryParams.packSize,
-	});
-	const departmentList = await hospitalApi.getDepartments(
-		params?.id as string,
-		{
-			page: queryParams.departmentPage,
-			size: queryParams.departmentSize,
-		}
-	);
+export const getServerSideProps: GetServerSideProps<
+	EditDepartmentProps
+> = async ({ params }) => {
+	const department = await departmentApi.getById(params?.id as string);
 	return {
 		props: {
-			packList,
-			departmentList,
-			hospital,
+			department,
 		},
 	};
 };
 
-function EditHospital({ packList, departmentList, hospital }: Props) {
+function EditHospital({ department }: EditDepartmentProps) {
 	return (
 		<AdminLayout>
-			<DepartmentForm initialValues={hospital} onFinish={console.log} />
+			<DepartmentForm initialValues={department} />
 		</AdminLayout>
 	);
 }

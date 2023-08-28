@@ -20,7 +20,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
 	};
 };
 
-function EditHospital({ doctor }: Props) {
+function EditTimeSlot({ doctor }: Props) {
 	return (
 		<AdminLayout>
 			<DoctorForm initialValues={doctor} />
@@ -28,4 +28,4 @@ function EditHospital({ doctor }: Props) {
 	);
 }
 
-export default EditHospital;
+export default EditTimeSlot;

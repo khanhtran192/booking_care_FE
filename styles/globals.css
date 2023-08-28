@@ -57,3 +57,7 @@
 .slick-dots.slick-dots-bottom {
 	@apply -bottom-3;
 }
+
+.ant-popconfirm-buttons {
+	@apply flex items-center justify-end;
+}

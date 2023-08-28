@@ -1,81 +1,48 @@
+import { readIdCard } from "@/axiosClient/endpoints";
+import { Customer } from "@/axiosClient/types";
 import Logo from "@/components/Logo";
-import AppDatePicker from "@/components/fields/AppDatePicker";
+import AppDatePicker, { FORMAT_DATE } from "@/components/fields/AppDatePicker";
+import { BgUpload } from "@/components/fields/avatar";
 import AdminLayout from "@/components/layout/AdminLayout";
 import { useAuth } from "@/lib/AuthProvider";
-import { Button, Form, Input, Select, message } from "antd";
-import React, { useEffect, useState } from "react";
+import {
+	Button,
+	Col,
+	Form,
+	Input,
+	Row,
+	Select,
+	Typography,
+	message,
+} from "antd";
+import dayjs from "dayjs";
+import React, { useCallback, useEffect, useState } from "react";
 
 const { Option } = Select;
 
 const config = {
-	rules: [
-		{ type: "object" as const, required: true, message: "Please select time!" },
-	],
+	rules: [{ required: true, message: "Hãy chọn ngày sinh của bạn!" }],
 };
-
-const formItemLayout = {
-	labelCol: {
-		xs: { span: 24 },
-		sm: { span: 8 },
-	},
-	wrapperCol: {
-		xs: { span: 24 },
-		sm: { span: 16 },
-	},
-};
-
-const tailFormItemLayout = {
-	wrapperCol: {
-		xs: {
-			span: 24,
-			offset: 0,
-		},
-		sm: {
-			span: 24,
-			offset: 0,
-		},
-	},
-};
-interface CustomerData {
-	id: number;
-	fullName: string;
-	address: string;
-	dateOfBirth: string;
-	phoneNumber: number;
-	idCard: string;
-	gender: string;
-}
 
 const Info: React.FC = () => {
 	const { axiosAuth, user } = useAuth();
 	const [form] = Form.useForm();
-
-	const [data, setData] = useState<CustomerData>({
-		id: 1,
-		fullName: "",
-		address: "",
-		dateOfBirth: "",
-		phoneNumber: 0,
-		idCard: "",
-		gender: "",
-	});
+	const [loading, setLoading] = useState(false);
 
 	//fetch data
 	useEffect(() => {
+		setLoading(true);
 		axiosAuth
 			.get(`/customers/${user?.userId}`)
 			.then((response) => {
-				setData(response as unknown as CustomerData);
+				setLoading(false);
+				form.setFieldsValue(response as unknown as Customer);
 			})
 			.catch((error) => {
+				setLoading(false);
 				console.error("Error fetching data: ", error);
 			});
-	}, [axiosAuth, user?.userId]);
-
-	// Set form fields value when data changes
-	useEffect(() => {
-		form.setFieldsValue({ ...data });
-	}, [data, form]);
+	}, [axiosAuth, user?.userId, form]);
 
 	const onFinish = (values: any) => {
 		try {
@@ -91,134 +58,136 @@ const Info: React.FC = () => {
 		}
 	};
 
+	const uploadImage = useCallback(
+		async (e: any) => {
+			setLoading(true);
+			if (!e.image?.file) return;
+			try {
+				const readInfo = await readIdCard(e.image.file);
+				form.setFieldsValue({
+					fullName: readInfo?.name,
+					address: readInfo?.address,
+					dateOfBirth: readInfo?.dob
+						? dayjs(readInfo?.dob, "DD/MM/YYYY").format(FORMAT_DATE)
+						: undefined,
+					gender: readInfo.sex,
+					idCard: readInfo?.id,
+				} as unknown as Customer);
+				setLoading(false);
+			} catch (error) {
+				setLoading(false);
+				console.log("error :", error);
+				message.error("Không thể đọc thông tin CMND/CCCD");
+			}
+		},
+		[form]
+	);
+
 	return (
 		<AdminLayout>
-			<Form
-				{...formItemLayout}
-				form={form}
-				labelAlign="left"
-				name="register"
-				onFinish={onFinish}
-				style={{ minWidth: 600 }}
-				scrollToFirstError
-				className="width-full">
-				<div className="flex justify-center mb-6">
-					<Logo />
-				</div>
-				{/*<Form.Item name="id" label="Id" required>*/}
-				{/*  <Input />*/}
-				{/*</Form.Item>*/}
+			<Typography.Title level={3} className="!mb-8">
+				Điền thông tin cá nhân hoặc gửi ảnh chụp CMND/CCCD để hệ thống tự động
+				điền cho bạn
+			</Typography.Title>
+			<Row gutter={32}>
+				<Col span={6}>
+					<Form
+						disabled={loading}
+						layout="vertical"
+						onValuesChange={uploadImage}>
+						<Form.Item name="image" label={"Ảnh CMND/CCCD"}>
+							<BgUpload width={675} height={425} />
+						</Form.Item>
+					</Form>
+				</Col>
+				<Col span={18}>
+					<Form
+						form={form}
+						labelAlign="left"
+						name="register"
+						onFinish={onFinish}
+						scrollToFirstError
+						className="width-full"
+						disabled={loading}
+						layout="vertical">
+						<div className="flex [&>*]:flex-1 flex-wrap gap-x-4">
+							<Form.Item
+								name="fullName"
+								label="Họ và tên"
+								rules={[
+									{
+										required: true,
+										message: "Vui lòng nhập họ tên của bạn",
+									},
+								]}>
+								<Input />
+							</Form.Item>
+							<Form.Item name="dateOfBirth" label="Ngày sinh" {...config}>
+								<AppDatePicker />
+							</Form.Item>
+						</div>
+						<div className="flex [&>*]:flex-1 flex-wrap gap-x-4">
+							<Form.Item
+								name="idCard"
+								label="Số căn cước công dân"
+								rules={[
+									{
+										required: true,
+										message:
+											"Nhập số CCCD để xác minh bạn. Thông tin sẽ được bảo mật. ",
+									},
+								]}>
+								<Input />
+							</Form.Item>
+							<Form.Item
+								name="gender"
+								label="Giới tính"
+								rules={[
+									{ required: true, message: "Vui lòng chọn giới tính!" },
+								]}>
+								<Select placeholder="Chọn giới tính">
+									<Option value="NAM">Nam</Option>
+									<Option value="NU">Nữ</Option>
+								</Select>
+							</Form.Item>
+						</div>
+						<div className="flex [&>*]:flex-1 flex-wrap gap-x-4">
+							<Form.Item
+								name="phoneNumber"
+								label="Số điện thoại"
+								rules={[
+									{
+										required: true,
+										message: "Vui lòng nhập số điện thoại liên hệ",
+									},
+								]}>
+								<Input
+									type="number"
+									placeholder="Enter numbers only"
+									style={{ width: "100%" }}
+								/>
+							</Form.Item>
+							<Form.Item
+								name="address"
+								label="Địa chỉ"
+								rules={[
+									{
+										required: true,
+										message: "Địa chỉ là bắt buộc!",
+									},
+								]}>
+								<Input />
+							</Form.Item>
+						</div>
 
-				{/*<Form.Item*/}
-				{/*  name="firstName"*/}
-				{/*  label="First Name"*/}
-				{/*  rules={[*/}
-				{/*    {*/}
-				{/*      required: true,*/}
-				{/*      message: "Please input your first name!",*/}
-				{/*    },*/}
-				{/*  ]}*/}
-				{/*  hasFeedback*/}
-				{/*>*/}
-				{/*  <Input />*/}
-				{/*</Form.Item>*/}
-
-				{/*<Form.Item*/}
-				{/*  name="lastName"*/}
-				{/*  label="Last Name"*/}
-				{/*  rules={[*/}
-				{/*    {*/}
-				{/*      required: true,*/}
-				{/*      message: "Please input your last name!",*/}
-				{/*    },*/}
-				{/*  ]}*/}
-				{/*  hasFeedback*/}
-				{/*>*/}
-				{/*  <Input />*/}
-				{/*</Form.Item>*/}
-
-				<Form.Item
-					name="fullName"
-					label="Họ và tên"
-					rules={[
-						{
-							required: true,
-							message: "Please input your full name!",
-						},
-					]}
-					hasFeedback>
-					<Input />
-				</Form.Item>
-
-				<Form.Item
-					name="address"
-					label="Địa chỉ"
-					rules={[
-						{
-							required: true,
-							message: "Please input your address!",
-						},
-					]}
-					hasFeedback>
-					<Input />
-				</Form.Item>
-
-				<Form.Item name="dateOfBirth" label="Ngày sinh" {...config}>
-					<AppDatePicker />
-				</Form.Item>
-				{/*<Form.Item*/}
-				{/*  name="email"*/}
-				{/*  label="Email"*/}
-				{/*  rules={[{ type: "email", required: true }]}*/}
-				{/*>*/}
-				{/*  <Input />*/}
-				{/*</Form.Item>*/}
-				<Form.Item
-					name="phoneNumber"
-					label="Số điện thoại"
-					rules={[
-						{
-							required: true,
-							message: "Vui lòng nhập số điện thoại liên hệ",
-						},
-					]}>
-					<Input
-						type="number"
-						placeholder="Enter numbers only"
-						style={{ width: "100%" }}
-					/>
-				</Form.Item>
-				<Form.Item
-					name="idCard"
-					label="Số căn cước công dân"
-					rules={[
-						{
-							required: true,
-							message:
-								"Nhập số CCCD để xác minh bạn. Thông tin sẽ được bảo mật. ",
-						},
-					]}>
-					<Input />
-				</Form.Item>
-				<Form.Item
-					name="gender"
-					label="Giới tính"
-					rules={[{ required: true, message: "Vui lòng chọn giới tính!" }]}>
-					<Select placeholder="Chọn giới tính">
-						<Option value="NAM">Nam</Option>
-						<Option value="NU">Nữ</Option>
-						{/*<Option value="other">KHAC</Option>*/}
-					</Select>
-				</Form.Item>
-				<Form.Item {...tailFormItemLayout} className="flex justify-center mt-8">
-					<Button
-						type="primary"
-						// className="text-purple-500 text-lg bg-gradient-to-br from-blue-50 via-purple-50 via-purple-100 to-white to-90% "
-						htmlType="submit">
-						Submit
-					</Button>
-				</Form.Item>
-			</Form>
+						<Form.Item className="flex justify-center mt-8">
+							<Button type="primary" htmlType="submit" loading={loading}>
+								Submit
+							</Button>
+						</Form.Item>
+					</Form>
+				</Col>
+			</Row>
 		</AdminLayout>
 	);
 };
