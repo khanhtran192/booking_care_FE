@@ -113,7 +113,7 @@ function AdminTable<T extends object>({
 
 	const tableProps = useMemo(() => {
 		const newProps: any = { ...props };
-		if (!pagination) {
+		if (pagination === false) {
 			newProps.pagination = false;
 			newProps.dataSource = Array.isArray(res) ? res : undefined;
 		} else {
@@ -127,7 +127,7 @@ function AdminTable<T extends object>({
 			newProps.dataSource = data;
 		}
 		return newProps;
-	}, [props, res]);
+	}, [pagination, props, res]);
 
 	const handleTableChange = useCallback<
 		NonNullable<AdminTableProps<T>["onChange"]>
