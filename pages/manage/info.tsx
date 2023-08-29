@@ -44,19 +44,25 @@ const Info: React.FC = () => {
 			});
 	}, [axiosAuth, user?.userId, form]);
 
-	const onFinish = (values: any) => {
-		try {
-			if (!user?.userId) {
-				axiosAuth.post("/customers", values);
-				message.success("Thêm thông tin thành công");
-			} else {
-				axiosAuth.put(`customers/${user?.userId}`, values);
-				message.success("Cập nhật thông tin thành công");
+	const onFinish = useCallback(
+		async (values: any) => {
+			setLoading(true);
+			try {
+				if (!values?.id) {
+					await axiosAuth.post("/customers", values);
+					message.success("Thêm thông tin thành công");
+				} else {
+					await axiosAuth.put(`customers/${values.id}`, values);
+					message.success("Cập nhật thông tin thành công");
+				}
+				setLoading(false);
+			} catch (error) {
+				setLoading(false);
+				console.error("Error updating user data: ", error);
 			}
-		} catch (error) {
-			console.error("Error updating user data: ", error);
-		}
-	};
+		},
+		[axiosAuth]
+	);
 
 	const uploadImage = useCallback(
 		async (e: any) => {
@@ -110,6 +116,9 @@ const Info: React.FC = () => {
 						className="width-full"
 						disabled={loading}
 						layout="vertical">
+						<Form.Item name="id" hidden>
+							<Input />
+						</Form.Item>
 						<div className="flex [&>*]:flex-1 flex-wrap gap-x-4">
 							<Form.Item
 								name="fullName"

@@ -65,7 +65,7 @@ function HospitalForm({ initialValues, ...props }: FormPageProps) {
 				</div>
 			</div>
 			<div className="flex gap-4 [&>*]:flex-1">
-				{initialValues && (
+				{!initialValues && (
 					<Form.Item name="login" label="Tên đăng nhập">
 						<Input />
 					</Form.Item>
