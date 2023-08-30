@@ -62,7 +62,7 @@ function DoctorDetailPage({ doctor }: Props) {
             <p>{doctor.department.hospital.name}</p>
             <p>{doctor.department.hospital.address}</p>
           </div>
-				  <BookForm data={data} doctorId={doctor?.id} />
+				  <BookForm doctorId={doctor?.id} urlTimeSlotFree={"/hospitals" + DOCTORS + "/" + doctor?.id + "/time-slot-free" } />
         </div>
         <hr className="my-4" />
         <div

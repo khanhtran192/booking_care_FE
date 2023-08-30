@@ -1,5 +1,5 @@
 import { packApi } from "@/axiosClient/endpoints";
-import { HOSPITALS, PACKS } from "@/axiosClient/urls";
+import {DOCTORS, HOSPITALS, PACKS} from "@/axiosClient/urls";
 import BookForm from "@/components/form/BookForm";
 import AppContainer from "@/components/layout/AppContainer";
 import Footer from "@/components/layout/Footer";
@@ -54,7 +54,8 @@ function DoctorDetailPage({ pack }: Props) {
 						<p>{pack.hospital.name}</p>
 						<p>{pack.hospital.address}</p>
 					</div>
-					<BookForm data={data} packId={pack?.id}/>
+					<BookForm packId={pack?.id} urlTimeSlotFree={"/hospitals" + PACKS + "/" + pack?.id + "/time-slot-free" } />
+
 				</div>
 				<hr className="my-4" />
 				<div

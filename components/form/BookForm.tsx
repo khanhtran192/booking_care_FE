@@ -1,10 +1,8 @@
-import { axiosAuth } from "@/axiosClient";
 import { TimeSlot } from "@/axiosClient/types";
 import { cn } from "@/lib/utils";
 import { LeftCircleOutlined } from "@ant-design/icons";
 import {
 	Button,
-	DatePicker,
 	Form,
 	FormProps,
 	Input,
@@ -14,16 +12,27 @@ import {
 } from "antd";
 import dayjs from "dayjs";
 import React from "react";
+import useSWR from "swr";
+import AppDatePicker, {FORMAT_DATE} from "@/components/fields/AppDatePicker";
+import {useAuth} from "@/lib/AuthProvider";
 
 interface BookFormProps extends FormProps {
-	data: TimeSlot[];
-	doctorId: Number;
-	packId: Number;
+	doctorId?: Number;
+	packId?: Number;
+	urlTimeSlotFree: string;
 }
 
-function BookForm({ data, doctorId, packId, ...props }: BookFormProps) {
+function BookForm({doctorId, packId, urlTimeSlotFree, ...props }: BookFormProps) {
+	const { axiosAuth } = useAuth();
 	const [open, setOpen] = React.useState(false);
 	const [idTimeSlot, setIdTimeSlot] = React.useState<Number>();
+	const [dateSelect, setDateSelect] = React.useState<string | undefined>(dayjs().add(1).format(FORMAT_DATE));
+	const { data } = useSWR(urlTimeSlotFree, (url) =>
+		axiosAuth.get(url, {params: {date: dateSelect}}) as Promise<TimeSlot[]>
+	);
+	console.log(urlTimeSlotFree)
+	console.log(dateSelect)
+	console.log(data)
 
 	const handleClickTimeSLot = (id: number) => {
 		setOpen(true);
@@ -74,12 +83,14 @@ function BookForm({ data, doctorId, packId, ...props }: BookFormProps) {
 					</Typography.Title>
 				</div>
 				<Form.Item name="date" noStyle>
-					<DatePicker />
+					<AppDatePicker onChange={date => {
+						setDateSelect(date);
+					}} />
 				</Form.Item>
 			</div>
 			<div className={cn("flex flex-wrap mt-4", open ? "flex-col" : "gap-4")}>
 				<Form.Item name="timeSlot" noStyle hidden={open}>
-					{data?.map((timeSlot: any) => (
+					{data?.map?.((timeSlot: any) => (
 						<Button
 							key={timeSlot.id}
 							value={timeSlot.id}
