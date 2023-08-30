@@ -59,13 +59,16 @@ function EditOrder({ orderId }: Props) {
 		}
 	}, [data, form]);
 
-	const handleFinish = useCallback((values: any) => {
-		const sendData = {
-			...values,
-			timeSlot: idTimeSlot,
-		};
-		console.log(sendData);
-	}, []);
+	const handleFinish = useCallback(
+		(values: any) => {
+			const sendData = {
+				...values,
+				timeSlot: idTimeSlot,
+			};
+			console.log(sendData);
+		},
+		[idTimeSlot]
+	);
 
 	return (
 		<AdminLayout>
