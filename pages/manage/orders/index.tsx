@@ -3,7 +3,26 @@ import { OrderInfo } from "@/axiosClient/types";
 import AdminTable from "@/components/AdminTable";
 import AdminLayout from "@/components/layout/AdminLayout";
 import { useAuth } from "@/lib/AuthProvider";
-import type { TableColumnsType } from "antd";
+import { Tag, type TableColumnsType } from "antd";
+
+const statusProps = {
+	PENDING: {
+		color: "warning",
+		children: "Chờ xác nhận",
+	},
+	APPROVED: {
+		color: "success",
+		children: "Đã xác nhận",
+	},
+	REJECTED: {
+		color: "error",
+		children: "Bị từ chối",
+	},
+	CANCELED: {
+		color: "error",
+		children: "Đã hủy",
+	},
+};
 
 const columns: TableColumnsType<OrderInfo> = [
 	{
@@ -27,6 +46,9 @@ const columns: TableColumnsType<OrderInfo> = [
 	{
 		title: "Trạng thái",
 		dataIndex: "status",
+		render: (status: keyof typeof statusProps) => {
+			return <Tag {...statusProps[status]} />;
+		},
 	},
 ];
 

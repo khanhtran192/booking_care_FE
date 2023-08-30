@@ -54,8 +54,8 @@ function AdminTable<T extends object>({
 		if (!columns) return [];
 
 		const newCols = [...columns];
-		newCols.push(
-			{
+		if (typeof toggleApi === "function") {
+			newCols.push({
 				title: "Trạng thái",
 				dataIndex: "active",
 				render: (active: boolean) => {
@@ -65,49 +65,49 @@ function AdminTable<T extends object>({
 						</Tag>
 					);
 				},
+			});
+		}
+		newCols.push({
+			width: 100,
+			key: "action",
+			render: (_, record: any) => {
+				const text = record.active ? "Vô hiệu hóa" : "Kích hoạt";
+				return (
+					<div className="flex">
+						<Link href={`${router.route}/${record.id}/edit`}>
+							<Button icon={<EditOutlined />} type="link" />
+						</Link>
+						{typeof toggleApi === "function" && (
+							<Popconfirm
+								title={text}
+								description="Bạn có chắc chắn không?"
+								okText="Có"
+								cancelText="Không"
+								onConfirm={async () => {
+									try {
+										await toggleApi(axiosAuth, record);
+										message.success(text + " thành công!");
+										router.reload();
+									} catch (error) {
+										console.log("error :", error);
+										message.error(text + " thất bại!");
+									}
+								}}>
+								{record.active ? (
+									<Button icon={<CloseOutlined />} danger type="link" />
+								) : (
+									<Button
+										icon={<CheckOutlined />}
+										type="link"
+										color="success"
+									/>
+								)}
+							</Popconfirm>
+						)}
+					</div>
+				);
 			},
-			{
-				width: 100,
-				key: "action",
-				render: (_, record: any) => {
-					const text = record.active ? "Vô hiệu hóa" : "Kích hoạt";
-					return (
-						<div className="flex">
-							<Link href={`${router.route}/${record.id}/edit`}>
-								<Button icon={<EditOutlined />} type="link" />
-							</Link>
-							{typeof toggleApi === "function" && (
-								<Popconfirm
-									title={text}
-									description="Bạn có chắc chắn không?"
-									okText="Có"
-									cancelText="Không"
-									onConfirm={async () => {
-										try {
-											await toggleApi(axiosAuth, record);
-											message.success(text + " thành công!");
-											router.reload();
-										} catch (error) {
-											console.log("error :", error);
-											message.error(text + " thất bại!");
-										}
-									}}>
-									{record.active ? (
-										<Button icon={<CloseOutlined />} danger type="link" />
-									) : (
-										<Button
-											icon={<CheckOutlined />}
-											type="link"
-											color="success"
-										/>
-									)}
-								</Popconfirm>
-							)}
-						</div>
-					);
-				},
-			}
-		);
+		});
 		return newCols;
 	}, [axiosAuth, columns, message, router, toggleApi]);
 

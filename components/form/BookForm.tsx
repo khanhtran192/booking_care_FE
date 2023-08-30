@@ -11,10 +11,11 @@ import {
 	Typography,
 } from "antd";
 import dayjs from "dayjs";
-import React from "react";
+import React, { useState } from "react";
 import useSWR from "swr";
-import AppDatePicker, {FORMAT_DATE} from "@/components/fields/AppDatePicker";
-import {useAuth} from "@/lib/AuthProvider";
+import AppDatePicker, { FORMAT_DATE } from "@/components/fields/AppDatePicker";
+import { useAuth } from "@/lib/AuthProvider";
+import { useRouter } from "next/router";
 
 interface BookFormProps extends FormProps {
 	doctorId?: Number;
@@ -22,17 +23,27 @@ interface BookFormProps extends FormProps {
 	urlTimeSlotFree: string;
 }
 
-function BookForm({doctorId, packId, urlTimeSlotFree, ...props }: BookFormProps) {
+function BookForm({
+	doctorId,
+	packId,
+	urlTimeSlotFree,
+	...props
+}: BookFormProps) {
 	const { axiosAuth } = useAuth();
-	const [open, setOpen] = React.useState(false);
-	const [idTimeSlot, setIdTimeSlot] = React.useState<Number>();
-	const [dateSelect, setDateSelect] = React.useState<string | undefined>(dayjs().add(1).format(FORMAT_DATE));
-	const { data } = useSWR(urlTimeSlotFree, (url) =>
-		axiosAuth.get(url, {params: {date: dateSelect}}) as Promise<TimeSlot[]>
+	const router = useRouter();
+	const [loading, setLoading] = useState(false);
+	const [open, setOpen] = useState(false);
+	const [idTimeSlot, setIdTimeSlot] = useState<number>();
+	const [dateSelect, setDateSelect] = useState<string | undefined>(
+		dayjs().add(1).format(FORMAT_DATE)
 	);
-	console.log(urlTimeSlotFree)
-	console.log(dateSelect)
-	console.log(data)
+	const { data } = useSWR(
+		urlTimeSlotFree,
+		(url) =>
+			axiosAuth.get(url, { params: { date: dateSelect } }) as Promise<
+				TimeSlot[]
+			>
+	);
 
 	const handleClickTimeSLot = (id: number) => {
 		setOpen(true);
@@ -40,11 +51,10 @@ function BookForm({doctorId, packId, urlTimeSlotFree, ...props }: BookFormProps)
 	};
 
 	const onFinish = async (values: any) => {
-		const formattedDate = dayjs(values.date).format("YYYY-MM-DD");
+		setLoading(true);
 		const dataToSend = {
 			...values,
 			timeSlot: idTimeSlot,
-			date: formattedDate,
 		};
 		try {
 			if (doctorId) {
@@ -57,13 +67,21 @@ function BookForm({doctorId, packId, urlTimeSlotFree, ...props }: BookFormProps)
 				await axiosAuth.post(`/hospitals/packs/${packId}/booking`, dataToSend);
 			}
 			message.success("Đặt lịch khám thành công!");
+			setLoading(false);
+			router.push("/manage/orders");
 		} catch (err) {
 			console.log(err);
+			setLoading(false);
 			message.error("Có lỗi xảy ra!");
 		}
 	};
 	return (
-		<Form layout="vertical" {...props} onFinish={onFinish}>
+		<Form
+			layout="vertical"
+			initialValues={{ date: dateSelect }}
+			disabled={loading}
+			{...props}
+			onFinish={onFinish}>
 			<div className="flex justify-between items-center">
 				<div className="flex">
 					<Button
@@ -83,13 +101,16 @@ function BookForm({doctorId, packId, urlTimeSlotFree, ...props }: BookFormProps)
 					</Typography.Title>
 				</div>
 				<Form.Item name="date" noStyle>
-					<AppDatePicker onChange={date => {
-						setDateSelect(date);
-					}} />
+					<AppDatePicker
+						className="max-w-[200px]"
+						onChange={(date) => {
+							setDateSelect(date);
+						}}
+					/>
 				</Form.Item>
 			</div>
 			<div className={cn("flex flex-wrap mt-4", open ? "flex-col" : "gap-4")}>
-				<Form.Item name="timeSlot" noStyle hidden={open}>
+				<Form.Item noStyle hidden={open}>
 					{data?.map?.((timeSlot: any) => (
 						<Button
 							key={timeSlot.id}
@@ -107,7 +128,7 @@ function BookForm({doctorId, packId, urlTimeSlotFree, ...props }: BookFormProps)
 						rules={[{ required: true }]}>
 						<Input.TextArea rows={3} />
 					</Form.Item>
-					<Button htmlType="submit" type="primary">
+					<Button htmlType="submit" type="primary" loading={loading}>
 						Gửi yêu cầu khám bệnh
 					</Button>
 				</Form.Item>
