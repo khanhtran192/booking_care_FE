@@ -27,13 +27,13 @@ function DepartmentForm({ initialValues, ...props }: FormPageProps) {
 			})) as Department;
 			departmentId = newDepartment.id;
 		}
-		// if (logo?.file) {
-		// 	await uploadImage(
-		// 		axiosAuth,
-		// 		`${MANAGE_API.DEPARTMENTS}/${departmentId}/upload/logo`,
-		// 		logo.file
-		// 	);
-		// }
+		if (logo?.file) {
+			await uploadImage(
+				axiosAuth,
+				`${MANAGE_API.DEPARTMENTS}/${departmentId}/upload/logo`,
+				logo.file
+			);
+		}
 	}, []);
 	return (
 		<FormPage
