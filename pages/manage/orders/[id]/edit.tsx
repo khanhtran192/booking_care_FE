@@ -10,6 +10,8 @@ import { Button, Form, Input, message } from "antd";
 import { Axios } from "axios";
 import { GetServerSideProps } from "next";
 import { useCallback, useEffect, useState } from "react";
+import {useAuth} from "@/lib/AuthProvider";
+
 
 type Props = {
 	orderId: number | string;
@@ -27,6 +29,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
 
 function EditOrder({ orderId }: Props) {
 	const [form] = Form.useForm();
+	const {axiosAuth} = useAuth()
 	const { data, loading } = useAuthFetch<OrderInfo>(`orders/${orderId}`);
 	const [date, setDate] = useState<string>();
 	const [idTimeSlot, setIdTimeSlot] = useState<number>();
@@ -37,7 +40,7 @@ function EditOrder({ orderId }: Props) {
 				return;
 			}
 			let timeSlotUrl = HOSPITALS;
-			if (data.doctor.id) {
+			if (data.doctor?.id) {
 				timeSlotUrl += DOCTORS + "/" + data.doctor.id;
 			} else {
 				timeSlotUrl += PACKS + "/" + data.pack.id;
@@ -60,12 +63,14 @@ function EditOrder({ orderId }: Props) {
 	}, [data, form]);
 
 	const handleFinish = useCallback(
-		(values: any) => {
+		async (values: any) => {
 			const sendData = {
 				...values,
 				timeSlot: idTimeSlot,
 			};
 			console.log(sendData);
+			await axiosAuth.put("/order/" + orderId, sendData);
+
 		},
 		[idTimeSlot]
 	);
@@ -76,7 +81,8 @@ function EditOrder({ orderId }: Props) {
 				<Form.Item name="date" label="Ngày khám">
 					<AppDatePicker onChange={setDate} />
 				</Form.Item>
-				<Form.Item label="Thời gian khám">
+				<Form.Item label="Thời gian khám" >
+					<div className="flex flex-wrap gap-4">
 					{dataTimeSlot?.map?.((timeSlot: any) => (
 						<Button
 							type={idTimeSlot === timeSlot.id ? "primary" : "default"}
@@ -86,12 +92,10 @@ function EditOrder({ orderId }: Props) {
 							{timeSlot.time}
 						</Button>
 					))}
+					</div>
 				</Form.Item>
 				<Form.Item label="Triệu chứng" name="symptom">
 					<Input.TextArea />
-				</Form.Item>
-				<Form.Item name="description" label="Mô tả">
-					<FormEditor />
 				</Form.Item>
 			</FormPage>
 		</AdminLayout>
