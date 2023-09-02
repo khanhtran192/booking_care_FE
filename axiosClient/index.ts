@@ -21,10 +21,10 @@ const onResponseError = (error: AxiosError): Promise<AxiosError> => {
 };
 
 const axiosDefault: CreateAxiosDefaults = {
-	// baseURL: "https://booking-care-be.loca.lt/api/",
-	//baseURL: "http://localhost:3000/api/",
-	// baseURL: "http://192.168.1.43:8080/api/",
-	baseURL: "http://localhost:8080/api/",
+	baseURL: "https://booking-care-be.loca.lt/api/",
+	// baseURL: "http://localhost:3000/api/",
+	// baseURL: "https://2eb0-2405-4802-1d5e-e9e0-d4ab-3172-bf5e-dea5.ngrok-free.app/api/",
+	// baseURL: "http://localhost:8080/api/",
 	headers: {
 		"Content-Type": "application/json",
 		Authorization: `Bearer ${getCookie("id_token")}`,

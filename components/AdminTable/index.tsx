@@ -12,6 +12,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import queryString from "query-string";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import AppConfirm from "../AppConfirm";
 
 export interface AdminTableProps<T extends object> extends TableProps<T> {
 	getApi: (
@@ -20,6 +21,7 @@ export interface AdminTableProps<T extends object> extends TableProps<T> {
 	) => Promise<PaginationData<T>>;
 	toggleApi?: (axiosAuth: Axios, record: T) => Promise<any>;
 	creatable?: boolean;
+	getMoreActions?: (axiosAuth: Axios, record: T) => React.ReactNode;
 }
 
 function AdminTable<T extends object>({
@@ -28,6 +30,7 @@ function AdminTable<T extends object>({
 	getApi,
 	toggleApi,
 	creatable = true,
+	getMoreActions,
 	...props
 }: AdminTableProps<T>) {
 	const router = useRouter();
@@ -78,20 +81,13 @@ function AdminTable<T extends object>({
 							<Button icon={<EditOutlined />} type="link" />
 						</Link>
 						{typeof toggleApi === "function" && (
-							<Popconfirm
+							<AppConfirm
 								title={text}
-								description="Bạn có chắc chắn không?"
-								okText="Có"
-								cancelText="Không"
 								onConfirm={async () => {
 									try {
 										await toggleApi(axiosAuth, record);
-										message.success(text + " thành công!");
 										router.reload();
-									} catch (error) {
-										console.log("error :", error);
-										message.error(text + " thất bại!");
-									}
+									} catch (error) {}
 								}}>
 								{record.active ? (
 									<Button icon={<CloseOutlined />} danger type="link" />
@@ -102,14 +98,15 @@ function AdminTable<T extends object>({
 										color="success"
 									/>
 								)}
-							</Popconfirm>
+							</AppConfirm>
 						)}
+						{getMoreActions?.(axiosAuth, record)}
 					</div>
 				);
 			},
 		});
 		return newCols;
-	}, [axiosAuth, columns, message, router, toggleApi]);
+	}, [axiosAuth, columns, message, router, toggleApi, getMoreActions]);
 
 	const tableProps = useMemo(() => {
 		const newProps: any = { ...props };

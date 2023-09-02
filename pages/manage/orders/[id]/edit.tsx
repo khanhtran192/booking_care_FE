@@ -10,8 +10,7 @@ import { Button, Form, Input, message } from "antd";
 import { Axios } from "axios";
 import { GetServerSideProps } from "next";
 import { useCallback, useEffect, useState } from "react";
-import {useAuth} from "@/lib/AuthProvider";
-
+import { useAuth } from "@/lib/AuthProvider";
 
 type Props = {
 	orderId: number | string;
@@ -29,7 +28,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
 
 function EditOrder({ orderId }: Props) {
 	const [form] = Form.useForm();
-	const {axiosAuth} = useAuth()
+	const { axiosAuth } = useAuth();
 	const { data, loading } = useAuthFetch<OrderInfo>(`orders/${orderId}`);
 	const [date, setDate] = useState<string>();
 	const [idTimeSlot, setIdTimeSlot] = useState<number>();
@@ -39,15 +38,21 @@ function EditOrder({ orderId }: Props) {
 			if (!data || !date) {
 				return;
 			}
-			let timeSlotUrl = HOSPITALS;
+			let timeSlotUrl = "";
 			if (data.doctor?.id) {
 				timeSlotUrl += DOCTORS + "/" + data.doctor.id;
 			} else {
-				timeSlotUrl += PACKS + "/" + data.pack.id;
+				timeSlotUrl += HOSPITALS + PACKS + "/" + data.pack.id;
 			}
 			timeSlotUrl += "/time-slot-free?date=" + (date ?? data.date);
-			console.log("timeSlotUrl :", timeSlotUrl);
-			return (await axiosAuth.get(timeSlotUrl)) as TimeSlot[];
+			const timeSlotList = (await axiosAuth.get(timeSlotUrl)) as TimeSlot[];
+			if (timeSlotList.length === 0) {
+				message.error("Không còn ca trống");
+				setIdTimeSlot(undefined);
+			} else {
+				setIdTimeSlot(timeSlotList[0].id);
+			}
+			return timeSlotList;
 		},
 		[data, date]
 	);
@@ -70,9 +75,8 @@ function EditOrder({ orderId }: Props) {
 			};
 			console.log(sendData);
 			await axiosAuth.put("/order/" + orderId, sendData);
-
 		},
-		[idTimeSlot]
+		[axiosAuth, idTimeSlot, orderId]
 	);
 
 	return (
@@ -81,17 +85,17 @@ function EditOrder({ orderId }: Props) {
 				<Form.Item name="date" label="Ngày khám">
 					<AppDatePicker onChange={setDate} />
 				</Form.Item>
-				<Form.Item label="Thời gian khám" >
+				<Form.Item label="Thời gian khám">
 					<div className="flex flex-wrap gap-4">
-					{dataTimeSlot?.map?.((timeSlot: any) => (
-						<Button
-							type={idTimeSlot === timeSlot.id ? "primary" : "default"}
-							key={timeSlot.id}
-							value={timeSlot.id}
-							onClick={() => setIdTimeSlot(timeSlot.id)}>
-							{timeSlot.time}
-						</Button>
-					))}
+						{dataTimeSlot?.map?.((timeSlot: any) => (
+							<Button
+								type={idTimeSlot === timeSlot.id ? "primary" : "default"}
+								key={timeSlot.id}
+								value={timeSlot.id}
+								onClick={() => setIdTimeSlot(timeSlot.id)}>
+								{timeSlot.time}
+							</Button>
+						))}
 					</div>
 				</Form.Item>
 				<Form.Item label="Triệu chứng" name="symptom">

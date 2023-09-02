@@ -1,0 +1,87 @@
+import { manageHospitalApi } from "@/axiosClient/endpoints";
+import { OrderInfo } from "@/axiosClient/types";
+import AdminTable from "@/components/AdminTable";
+import AppConfirm from "@/components/AppConfirm";
+import AdminLayout from "@/components/layout/AdminLayout";
+import { useAuth } from "@/lib/AuthProvider";
+import { CheckOutlined, CloseCircleOutlined } from "@ant-design/icons";
+import { Button, type TableColumnsType } from "antd";
+import { Axios } from "axios";
+import { useCallback } from "react";
+import { renderOrderTag } from "../orders";
+
+const columns: TableColumnsType<OrderInfo> = [
+	{
+		title: "Ngày",
+		dataIndex: "date",
+		render: (date, { timeSlot }) => `${date} ${timeSlot.time}`,
+	},
+	{
+		title: "Khách hàng",
+		dataIndex: "customer",
+		render: (customer) => customer.fullName,
+	},
+	{
+		title: "Bên phụ trách",
+		dataIndex: "doctor",
+		render: (doctor, { pack }) => {
+			return doctor?.name || pack?.name;
+		},
+	},
+	{
+		title: "Địa chỉ",
+		dataIndex: "address",
+		key: "address",
+	},
+	{
+		title: "Triệu chứng",
+		dataIndex: "symtom",
+	},
+	{
+		title: "Giá tiền",
+		dataIndex: "price",
+	},
+	{
+		title: "Trạng thái",
+		dataIndex: "status",
+		render: renderOrderTag,
+	},
+];
+
+function ManageRequestOrdersPage() {
+	const { user } = useAuth();
+	const getMoreActions = useCallback((axiosAuth: Axios, record: OrderInfo) => {
+		if (record.status !== "PENDING") {
+			return;
+		}
+		return (
+			<>
+				<AppConfirm title="Chấp nhận" onConfirm={async () => {}}>
+					<Button type="link" icon={<CheckOutlined />} />
+				</AppConfirm>
+				<AppConfirm title="Từ chối" onConfirm={async () => {}}>
+					<Button type="link" icon={<CloseCircleOutlined />} danger />
+				</AppConfirm>
+			</>
+		);
+	}, []);
+	return (
+		<AdminLayout>
+			<AdminTable
+				creatable={false}
+				getApi={(axiosAuth, query) => {
+					if (!user?.hospitalId) return Promise.resolve({}) as any;
+					return manageHospitalApi.getOrders(
+						axiosAuth,
+						user?.hospitalId,
+						query
+					);
+				}}
+				getMoreActions={getMoreActions}
+				columns={columns}
+			/>
+		</AdminLayout>
+	);
+}
+
+export default ManageRequestOrdersPage;

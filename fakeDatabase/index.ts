@@ -1,3 +1,4 @@
+import { ROLE } from "@/axiosClient/utils";
 import { faker } from "@faker-js/faker";
 
 const selectRandom = <T>(arr: T[]) =>
@@ -102,7 +103,25 @@ const users = [
 		username: "admin",
 		id_token: "FAKE_TOKEN",
 		name: "Admin",
-		authorities: ["ADMIN", "USER"],
+		authorities: [ROLE.ADMIN, ROLE.USER],
+	},
+	{
+		userId: 1,
+		doctorId: doctors[0].id,
+		hospitalId: null,
+		user: "doctor",
+		id_token: "FAKE_TOKEN",
+		name: "Doctor",
+		authorities: [ROLE.DOCTOR, ROLE.USER],
+	},
+	{
+		userId: 2,
+		doctorId: null,
+		hospitalId: hospitals[0].id,
+		username: "hospital",
+		id_token: "FAKE_TOKEN",
+		name: "Hospital",
+		authorities: [ROLE.USER],
 	},
 ];
 
