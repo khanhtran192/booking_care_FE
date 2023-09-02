@@ -1,15 +1,16 @@
-import { managePackApi } from "@/axiosClient/endpoints";
-import { Hospital, TimeSlot } from "@/axiosClient/types";
+import {manageDepartmentApi, manageHospitalApi, managePackApi} from "@/axiosClient/endpoints";
+import {Department, Hospital, TimeSlot} from "@/axiosClient/types";
 import { MANAGE_API } from "@/axiosClient/urls";
 import { useAuth } from "@/lib/AuthProvider";
-import { Form, Input, InputNumber, Typography } from "antd";
+import {Form, Input, InputNumber, TableColumnsType, Typography} from "antd";
 import { useCallback } from "react";
 import AdminTable, { AdminTableProps } from "../AdminTable";
 import { BgUpload, FormAvatar } from "../fields/avatar";
 import { FormEditor } from "../fields/editor";
 import FormPage, { FormPageProps } from "./FormPage";
+import {renderImage} from "@/lib/renderUtils";
 
-const timeSLotColumns: AdminTableProps<TimeSlot>["columns"] = [
+const timeSLotColumns: TableColumnsType<TimeSlot> = [
 	{
 		dataIndex: "time",
 		title: "Thời gian",
@@ -32,6 +33,18 @@ const timeSLotColumns: AdminTableProps<TimeSlot>["columns"] = [
 	},
 ];
 
+const columns: TableColumnsType<Department> = [
+	{
+		width: 50,
+		dataIndex: "logo",
+		render: renderImage,
+	},
+	{
+		title: "Tên",
+		dataIndex: "departmentName",
+		key: "name",
+	},
+];
 function PackForm({ initialValues, ...props }: FormPageProps) {
 	const { axiosAuth, user } = useAuth();
 	const handleFinish = useCallback(
@@ -94,9 +107,30 @@ function PackForm({ initialValues, ...props }: FormPageProps) {
 			</Typography.Title>
 			<AdminTable
 				columns={timeSLotColumns}
-				getApi={managePackApi.getTimeSlots}
-				pagination={false}
+				getApi={(axiosAuth, query) =>
+					managePackApi.getTimeSlots(
+						axiosAuth,
+						1267,
+						query
+					)
+				}
+					pagination={false}
+
+				// toggleApi={(axiosAuth, record) =>
+				// 	manageDepartmentApi.toggleStatus(
+				// 		axiosAuth,
+				// 		record.id,
+				// 		record.active as boolean
+				// 	)
+				// }
 			/>
+			{/*<AdminTable*/}
+			{/*	columns={timeSLotColumns}*/}
+			{/*	getApi={(axiosAuth, query) =>*/}
+			{/*		managePackApi.getTimeSlots(axiosAuth, 1267 , query)*/}
+			{/*	}*/}
+			{/*	pagination={false}*/}
+			{/*/>*/}
 		</>
 	);
 }
