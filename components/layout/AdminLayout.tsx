@@ -15,8 +15,8 @@ import { Layout, Menu, theme } from "antd";
 import { useRouter } from "next/router";
 import { useAuth } from "@/lib/AuthProvider";
 import { UserInfo } from "@/axiosClient/types";
-import { ROLE } from "@/axiosClient/utils";
 import { getUser } from "@/axiosClient/userStore";
+import { ROLE } from "@/global/constants";
 
 const { Content, Sider } = Layout;
 
@@ -28,8 +28,8 @@ const getMenuItems = (user: UserInfo) => {
 			icon: <DashboardOutlined />,
 		},
 		{
-			key: "info",
-			label: "Thông tin cá nhân",
+			key: user?.hospitalId ? `hospitals/${user.hospitalId}/edit` : "info",
+			label: user?.hospitalId ? "Thông tin bệnh viện" : "Thông tin cá nhân",
 			icon: <IdcardOutlined />,
 		},
 		{
@@ -67,7 +67,7 @@ const getMenuItems = (user: UserInfo) => {
 				},
 				{
 					key: "doctors",
-					label: "Bác sĩ",
+					label: "Bác sỹ",
 					icon: <UserOutlined />,
 				},
 				{
@@ -117,7 +117,14 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
 	} = theme.useToken();
 	const router = useRouter();
 	const { user } = useAuth();
-	const defaultSelectedKeys = [router.pathname.split("/")[2] || "dashboard"];
+	const defaultSelectedKeys = useMemo(() => {
+		const currentPath = router.asPath
+			.split("/")
+			.slice(2)
+			.join("/")
+			.replace(/\?.+$/, "");
+		return [currentPath || "dashboard"];
+	}, [router.asPath]);
 
 	useEffect(() => {
 		if (!getUser().id_token) {

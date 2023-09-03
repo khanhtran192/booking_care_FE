@@ -16,7 +16,14 @@ import {
 	message,
 } from "antd";
 import dayjs from "dayjs";
-import React, { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import React, {
+	use,
+	useCallback,
+	useEffect,
+	useLayoutEffect,
+	useState,
+} from "react";
 
 const { Option } = Select;
 
@@ -25,24 +32,32 @@ const config = {
 };
 
 const Info: React.FC = () => {
+	const router = useRouter();
 	const { axiosAuth, user } = useAuth();
 	const [form] = Form.useForm();
 	const [loading, setLoading] = useState(false);
 
+	useLayoutEffect(() => {
+		if (user?.hospitalId) {
+			router.replace(`/manage/hospitals/${user?.hospitalId}/edit`);
+		}
+	}, [router, user?.hospitalId]);
+
 	//fetch data
 	useEffect(() => {
-		setLoading(true);
-		axiosAuth
-			.get(`/customers/${user?.userId}`)
-			.then((response) => {
+		const fetchApi = async () => {
+			setLoading(true);
+			try {
+				const response = await axiosAuth.get(`/customers/${user?.userId}`);
 				setLoading(false);
 				form.setFieldsValue(response as unknown as Customer);
-			})
-			.catch((error) => {
+			} catch (error) {
 				setLoading(false);
 				console.error("Error fetching data: ", error);
-			});
-	}, [axiosAuth, user?.userId, form]);
+			}
+		};
+		!user?.hospitalId && user?.userId && fetchApi();
+	}, [axiosAuth, user?.userId, form, user?.hospitalId]);
 
 	const onFinish = useCallback(
 		async (values: any) => {
@@ -91,112 +106,116 @@ const Info: React.FC = () => {
 
 	return (
 		<AdminLayout>
-			<Typography.Title level={3} className="!mb-8">
-				Điền thông tin cá nhân hoặc gửi ảnh chụp CMND/CCCD để hệ thống tự động
-				điền cho bạn
-			</Typography.Title>
-			<Row gutter={32}>
-				<Col span={6}>
-					<Form
-						disabled={loading}
-						layout="vertical"
-						onValuesChange={uploadImage}>
-						<Form.Item name="image" label={"Ảnh CMND/CCCD"}>
-							<BgUpload width={675} height={425} />
-						</Form.Item>
-					</Form>
-				</Col>
-				<Col span={18}>
-					<Form
-						form={form}
-						labelAlign="left"
-						name="register"
-						onFinish={onFinish}
-						scrollToFirstError
-						className="width-full"
-						disabled={loading}
-						layout="vertical">
-						<Form.Item name="id" hidden>
-							<Input />
-						</Form.Item>
-						<div className="flex [&>*]:flex-1 flex-wrap gap-x-4">
-							<Form.Item
-								name="fullName"
-								label="Họ và tên"
-								rules={[
-									{
-										required: true,
-										message: "Vui lòng nhập họ tên của bạn",
-									},
-								]}>
-								<Input />
-							</Form.Item>
-							<Form.Item name="dateOfBirth" label="Ngày sinh" {...config}>
-								<AppDatePicker />
-							</Form.Item>
-						</div>
-						<div className="flex [&>*]:flex-1 flex-wrap gap-x-4">
-							<Form.Item
-								name="idCard"
-								label="Số căn cước công dân"
-								rules={[
-									{
-										required: true,
-										message:
-											"Nhập số CCCD để xác minh bạn. Thông tin sẽ được bảo mật. ",
-									},
-								]}>
-								<Input />
-							</Form.Item>
-							<Form.Item
-								name="gender"
-								label="Giới tính"
-								rules={[
-									{ required: true, message: "Vui lòng chọn giới tính!" },
-								]}>
-								<Select placeholder="Chọn giới tính">
-									<Option value="NAM">Nam</Option>
-									<Option value="NU">Nữ</Option>
-								</Select>
-							</Form.Item>
-						</div>
-						<div className="flex [&>*]:flex-1 flex-wrap gap-x-4">
-							<Form.Item
-								name="phoneNumber"
-								label="Số điện thoại"
-								rules={[
-									{
-										required: true,
-										message: "Vui lòng nhập số điện thoại liên hệ",
-									},
-								]}>
-								<Input
-									type="number"
-									placeholder="Enter numbers only"
-									style={{ width: "100%" }}
-								/>
-							</Form.Item>
-							<Form.Item
-								name="address"
-								label="Địa chỉ"
-								rules={[
-									{
-										required: true,
-										message: "Địa chỉ là bắt buộc!",
-									},
-								]}>
-								<Input />
-							</Form.Item>
-						</div>
+			{!user?.hospitalId && (
+				<>
+					<Typography.Title level={3} className="!mb-8">
+						Điền thông tin cá nhân hoặc gửi ảnh chụp CMND/CCCD để hệ thống tự
+						động điền cho bạn
+					</Typography.Title>
+					<Row gutter={32}>
+						<Col span={6}>
+							<Form
+								disabled={loading}
+								layout="vertical"
+								onValuesChange={uploadImage}>
+								<Form.Item name="image" label={"Ảnh CMND/CCCD"}>
+									<BgUpload width={675} height={425} />
+								</Form.Item>
+							</Form>
+						</Col>
+						<Col span={18}>
+							<Form
+								form={form}
+								labelAlign="left"
+								name="register"
+								onFinish={onFinish}
+								scrollToFirstError
+								className="width-full"
+								disabled={loading}
+								layout="vertical">
+								<Form.Item name="id" hidden>
+									<Input />
+								</Form.Item>
+								<div className="flex [&>*]:flex-1 flex-wrap gap-x-4">
+									<Form.Item
+										name="fullName"
+										label="Họ và tên"
+										rules={[
+											{
+												required: true,
+												message: "Vui lòng nhập họ tên của bạn",
+											},
+										]}>
+										<Input />
+									</Form.Item>
+									<Form.Item name="dateOfBirth" label="Ngày sinh" {...config}>
+										<AppDatePicker />
+									</Form.Item>
+								</div>
+								<div className="flex [&>*]:flex-1 flex-wrap gap-x-4">
+									<Form.Item
+										name="idCard"
+										label="Số căn cước công dân"
+										rules={[
+											{
+												required: true,
+												message:
+													"Nhập số CCCD để xác minh bạn. Thông tin sẽ được bảo mật. ",
+											},
+										]}>
+										<Input />
+									</Form.Item>
+									<Form.Item
+										name="gender"
+										label="Giới tính"
+										rules={[
+											{ required: true, message: "Vui lòng chọn giới tính!" },
+										]}>
+										<Select placeholder="Chọn giới tính">
+											<Option value="NAM">Nam</Option>
+											<Option value="NU">Nữ</Option>
+										</Select>
+									</Form.Item>
+								</div>
+								<div className="flex [&>*]:flex-1 flex-wrap gap-x-4">
+									<Form.Item
+										name="phoneNumber"
+										label="Số điện thoại"
+										rules={[
+											{
+												required: true,
+												message: "Vui lòng nhập số điện thoại liên hệ",
+											},
+										]}>
+										<Input
+											type="number"
+											placeholder="Enter numbers only"
+											style={{ width: "100%" }}
+										/>
+									</Form.Item>
+									<Form.Item
+										name="address"
+										label="Địa chỉ"
+										rules={[
+											{
+												required: true,
+												message: "Địa chỉ là bắt buộc!",
+											},
+										]}>
+										<Input />
+									</Form.Item>
+								</div>
 
-						<Form.Item className="flex justify-center mt-8">
-							<Button type="primary" htmlType="submit" loading={loading}>
-								Submit
-							</Button>
-						</Form.Item>
-					</Form>
-				</Col>
-			</Row>
+								<Form.Item className="flex justify-center mt-8">
+									<Button type="primary" htmlType="submit" loading={loading}>
+										Submit
+									</Button>
+								</Form.Item>
+							</Form>
+						</Col>
+					</Row>
+				</>
+			)}
 		</AdminLayout>
 	);
 };

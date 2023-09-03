@@ -105,7 +105,9 @@ export const orderApi = {
 	cancel: (axiosAuth: Axios, id: number | string) =>
 		axiosAuth.put(`/order/${id}/cancel`),
 	getDiagnose: (axiosAuth: Axios, id: number | string) =>
-		axiosAuth.get(`/order/${id}/diagnose`) as Promise<Diagnose>,
+		axiosAuth.get(`${ORDERS}/${id}/diagnose`) as Promise<Diagnose>,
+	diagnose: (axiosAuth: Axios, id: number | string, data: any) =>
+		axiosAuth.post(`${ORDERS}/${id}/diagnose`, data) as Promise<Diagnose>,
 };
 
 export const adminManageApi = {

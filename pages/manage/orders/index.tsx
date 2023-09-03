@@ -3,40 +3,40 @@ import { OrderInfo } from "@/axiosClient/types";
 import AdminTable from "@/components/AdminTable";
 import AppConfirm from "@/components/AppConfirm";
 import AdminLayout from "@/components/layout/AdminLayout";
+import { ORDER_STATUS } from "@/global/constants";
 import { DeleteOutlined } from "@ant-design/icons";
-import { Button, Tag, message, type TableColumnsType } from "antd";
+import { Button, Tag, type TableColumnsType } from "antd";
 import { Axios } from "axios";
 import { useCallback } from "react";
 
-type Status = "PENDING" | "APPROVED" | "REJECTED" | "CANCELED" | "COMPLETE";
 const statusProps: Record<
-	Status,
+	ORDER_STATUS,
 	{
 		color: string;
 		children: string;
 		cancelable?: boolean;
 	}
 > = {
-	PENDING: {
+	[ORDER_STATUS.PENDING]: {
 		color: "warning",
 		children: "Chờ xác nhận",
 		cancelable: true,
 	},
-	APPROVED: {
+	[ORDER_STATUS.APPROVED]: {
 		color: "success",
 		children: "Đã xác nhận",
 		cancelable: true,
 	},
-	REJECTED: {
+	[ORDER_STATUS.REJECTED]: {
 		color: "error",
 		children: "Bị từ chối",
 		cancelable: true,
 	},
-	CANCELED: {
+	[ORDER_STATUS.CANCELED]: {
 		color: "error",
 		children: "Đã hủy",
 	},
-	COMPLETE: {
+	[ORDER_STATUS.COMPLETE]: {
 		color: "success",
 		children: "Đã hoàn thành",
 	},
@@ -74,7 +74,10 @@ const columns: TableColumnsType<OrderInfo> = [
 
 function ManageHospitalsPage() {
 	const getMoreActions = useCallback((axiosAuth: Axios, record: OrderInfo) => {
-		if (record.status && !statusProps[record.status as Status].cancelable) {
+		if (
+			record.status &&
+			!statusProps[record.status as ORDER_STATUS].cancelable
+		) {
 			return;
 		}
 		return (

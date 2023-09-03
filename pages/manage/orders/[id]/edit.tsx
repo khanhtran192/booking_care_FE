@@ -6,11 +6,21 @@ import { FormEditor } from "@/components/fields/editor";
 import FormPage from "@/components/form/FormPage";
 import AdminLayout from "@/components/layout/AdminLayout";
 import { useAuthFetch } from "@/lib/hooks";
-import { Button, Form, Input, message } from "antd";
+import {
+	Button,
+	Descriptions,
+	DescriptionsProps,
+	Form,
+	Input,
+	Typography,
+	message,
+} from "antd";
 import { Axios } from "axios";
 import { GetServerSideProps } from "next";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/lib/AuthProvider";
+import { DiagnoseDetail } from "@/components/form/DiagnoseForm";
+import { ORDER_STATUS } from "@/global/constants";
 
 type Props = {
 	orderId: number | string;
@@ -50,7 +60,10 @@ function EditOrder({ orderId }: Props) {
 				message.error("Không còn ca trống");
 				setIdTimeSlot(undefined);
 			} else {
-				setIdTimeSlot(timeSlotList[0].id);
+				const oldTimeSlot = timeSlotList.find(
+					(timeSlot) => timeSlot.id === data?.timeSlot?.id
+				);
+				setIdTimeSlot(oldTimeSlot ? oldTimeSlot.id : timeSlotList[0].id);
 			}
 			return timeSlotList;
 		},
@@ -79,9 +92,55 @@ function EditOrder({ orderId }: Props) {
 		[axiosAuth, idTimeSlot, orderId]
 	);
 
+	const items: DescriptionsProps["items"] = useMemo(
+		() => [
+			{
+				key: "3",
+				label: "Bệnh viện",
+				children: (
+					<p>
+						{data?.doctor?.department?.hospital?.name ??
+							data?.pack?.hospital?.name}
+					</p>
+				),
+			},
+			{
+				key: "4",
+				label: "Địa chỉ khám",
+				children: <p>{data?.address}</p>,
+			},
+			{
+				key: "4",
+				label: "Bác sỹ khám",
+				children: <p>{data?.doctor?.name}</p>,
+			},
+			{
+				key: "5",
+				label: "Gói khám",
+				children: <p>{data?.pack?.name}</p>,
+			},
+		],
+		[data]
+	);
+
 	return (
 		<AdminLayout>
-			<FormPage form={form} disabled={loading} onFinish={handleFinish}>
+			<Descriptions
+				bordered
+				column={2}
+				layout="vertical"
+				title={
+					<Typography.Title className="!text-2xl" level={1}>
+						Chi tiết đơn khám
+					</Typography.Title>
+				}
+				items={items}></Descriptions>
+
+			<FormPage
+				className="mt-8"
+				form={form}
+				disabled={loading || data?.status === ORDER_STATUS.COMPLETE}
+				onFinish={handleFinish}>
 				<Form.Item name="date" label="Ngày khám">
 					<AppDatePicker onChange={setDate} />
 				</Form.Item>
@@ -102,6 +161,9 @@ function EditOrder({ orderId }: Props) {
 					<Input.TextArea />
 				</Form.Item>
 			</FormPage>
+			{data?.status === ORDER_STATUS.COMPLETE && (
+				<DiagnoseDetail orderId={orderId} />
+			)}
 		</AdminLayout>
 	);
 }

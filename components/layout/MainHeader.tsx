@@ -1,4 +1,3 @@
-import { deleteUser } from "@/axiosClient/userStore";
 import { useAuth } from "@/lib/AuthProvider";
 import { DownOutlined, UserOutlined } from "@ant-design/icons";
 import { Avatar, Button, Divider, Dropdown, Typography } from "antd";
