@@ -5,7 +5,9 @@ import AdminLayout from "@/components/layout/AdminLayout";
 import { GetServerSideProps } from "next";
 
 type Props = {
-	doctor: Doctor;
+	doctor: Omit<Doctor, "department"> & {
+		departmentId: string | number;
+	};
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async ({
@@ -15,7 +17,10 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
 	const doctor = await doctorApi.getById(params?.id as string);
 	return {
 		props: {
-			doctor,
+			doctor: {
+				...doctor,
+				departmentId: doctor.department.id,
+			},
 		},
 	};
 };

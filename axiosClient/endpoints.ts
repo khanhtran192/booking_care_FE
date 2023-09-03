@@ -158,6 +158,10 @@ export const manageHospitalApi = {
 		axiosAuth.get(`${MANAGE_API.PACKS}/${id}${TIME_SLOTS}`, {
 			params,
 		}) as Promise<TimeSlot>,
+	getOrders: (axiosAuth: Axios, id: number | string, params?: GetParamsType) =>
+		axiosAuth
+			.get(`${HOSPITALS}/${id}/manage/order`, { params })
+			.then((data: any) => convertApiResponseToAppPagination<OrderInfo>(data)),
 };
 
 export const manageDepartmentApi = {
