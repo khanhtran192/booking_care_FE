@@ -9,6 +9,8 @@ import { Button, type TableColumnsType } from "antd";
 import { Axios } from "axios";
 import { useCallback } from "react";
 import { renderOrderTag } from "../orders";
+import { useRouter } from "next/router";
+import { ORDER_STATUS } from "@/global/constants";
 
 const columns: TableColumnsType<OrderInfo> = [
 	{
@@ -50,16 +52,28 @@ const columns: TableColumnsType<OrderInfo> = [
 
 function ManageRequestOrdersPage() {
 	const { user } = useAuth();
+	const router = useRouter();
 	const getMoreActions = useCallback((axiosAuth: Axios, record: OrderInfo) => {
-		if (record.status !== "PENDING") {
+		if (record.status !== ORDER_STATUS.PENDING) {
 			return;
 		}
+		const url = `/doctors/orders/${record.id}/`;
 		return (
 			<>
-				<AppConfirm title="Chấp nhận" onConfirm={async () => {}}>
+				<AppConfirm
+					title="Nhận đơn"
+					onConfirm={async () => {
+						await axiosAuth.put(url + "approved");
+						router.reload();
+					}}>
 					<Button type="link" icon={<CheckOutlined />} />
 				</AppConfirm>
-				<AppConfirm title="Từ chối" onConfirm={async () => {}}>
+				<AppConfirm
+					title="Từ chối đơn"
+					onConfirm={async () => {
+						await axiosAuth.put(url + "rejected");
+						router.reload();
+					}}>
 					<Button type="link" icon={<CloseCircleOutlined />} danger />
 				</AppConfirm>
 			</>

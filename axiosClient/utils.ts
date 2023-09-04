@@ -1,9 +1,8 @@
-import { AppPaginationProps } from "@/components/CardList/ListPagination";
-import { ApiResponse, PaginationData } from "./types";
-import { GetServerSideProps, GetServerSidePropsContext } from "next";
-import { getUser } from "./userStore";
-import axiosClient from ".";
 import { Axios } from "axios";
+import { GetServerSideProps, GetServerSidePropsContext } from "next";
+import axiosClient from ".";
+import { ApiResponse, PaginationData } from "./types";
+import { getUser } from "./userStore";
 
 export const convertApiResponseToAppPagination = <T>(
 	apiResponse: ApiResponse<T>
@@ -31,10 +30,4 @@ export function getServerPropsAuth<Props extends object>(
 			props,
 		};
 	};
-}
-
-export enum ROLE {
-	ADMIN = "ROLE_ADMIN",
-	DOCTOR = "ROLE_DOCTOR",
-	USER = "ROLE_USER",
 }

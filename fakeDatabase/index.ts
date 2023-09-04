@@ -1,4 +1,4 @@
-import { ROLE } from "@/axiosClient/utils";
+import { ROLE } from "@/global/constants";
 import { faker } from "@faker-js/faker";
 
 const selectRandom = <T>(arr: T[]) =>

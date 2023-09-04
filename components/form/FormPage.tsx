@@ -1,9 +1,10 @@
 import { App, Button, Form, FormProps } from "antd";
 import { useRouter } from "next/router";
-import { useCallback, useState } from "react";
+import { ReactNode, useCallback, useState } from "react";
 
 export interface FormPageProps extends FormProps {
 	action?: string;
+	footer?: ReactNode;
 }
 
 function FormPage({
@@ -11,6 +12,7 @@ function FormPage({
 	action,
 	children,
 	onFinish,
+	footer,
 	...props
 }: FormPageProps) {
 	const router = useRouter();
@@ -49,16 +51,20 @@ function FormPage({
 			{...props}>
 			{children as any}
 			<div className="flex justify-end gap-4">
-				<Button
-					danger
-					onClick={() => {
-						router.back();
-					}}>
-					Hủy
-				</Button>
-				<Button loading={loading} type="primary" htmlType="submit">
-					Lưu
-				</Button>
+				{footer ?? (
+					<>
+						<Button
+							danger
+							onClick={() => {
+								router.back();
+							}}>
+							Hủy
+						</Button>
+						<Button loading={loading} type="primary" htmlType="submit">
+							Lưu
+						</Button>
+					</>
+				)}
 			</div>
 		</Form>
 	);
