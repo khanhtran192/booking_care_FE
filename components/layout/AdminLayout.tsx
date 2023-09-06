@@ -118,12 +118,9 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
 	const router = useRouter();
 	const { user } = useAuth();
 	const defaultSelectedKeys = useMemo(() => {
-		const currentPath = router.asPath
-			.split("/")
-			.slice(2)
-			.join("/")
-			.replace(/\?.+$/, "");
-		return [currentPath || "dashboard"];
+		const paths = router.asPath.split("/");
+		const currentPath = paths.slice(2).join("/").replace(/\?.+$/, "");
+		return paths.concat([currentPath || "dashboard"]);
 	}, [router.asPath]);
 
 	useEffect(() => {

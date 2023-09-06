@@ -91,7 +91,7 @@ function ManageHospitalsPage() {
 	return (
 		<AdminLayout>
 			<AdminTable
-				creatable={false}
+				onCreate={false}
 				columns={columns}
 				getApi={(axiosAuth, query) => orderApi.getOrders(axiosAuth, query)}
 				getMoreActions={getMoreActions}

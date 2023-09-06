@@ -11,3 +11,5 @@ export enum ROLE {
 	DOCTOR = "ROLE_DOCTOR",
 	USER = "ROLE_USER",
 }
+
+export const FORMAT_HOUR = "h:mm A";

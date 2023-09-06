@@ -1,36 +1,13 @@
-import { managePackApi } from "@/axiosClient/endpoints";
-import { Hospital, TimeSlot } from "@/axiosClient/types";
+import { managePackApi, uploadImage } from "@/axiosClient/endpoints";
+import { Hospital } from "@/axiosClient/types";
 import { MANAGE_API } from "@/axiosClient/urls";
 import { useAuth } from "@/lib/AuthProvider";
 import { Form, Input, InputNumber, Typography } from "antd";
 import { useCallback } from "react";
-import AdminTable, { AdminTableProps } from "../AdminTable";
+import TimeSlotTable from "../TimeSlotTable";
 import { BgUpload, FormAvatar } from "../fields/avatar";
 import { FormEditor } from "../fields/editor";
 import FormPage, { FormPageProps } from "./FormPage";
-
-const timeSLotColumns: AdminTableProps<TimeSlot>["columns"] = [
-	{
-		dataIndex: "time",
-		title: "Thời gian",
-	},
-	{
-		dataIndex: "startTime",
-		title: "Bắt đầu",
-	},
-	{
-		dataIndex: "endTime",
-		title: "Kết thúc",
-	},
-	{
-		dataIndex: "price",
-		title: "Giá tiền",
-	},
-	{
-		dataIndex: "description",
-		title: "Mô tả",
-	},
-];
 
 function PackForm({ initialValues, ...props }: FormPageProps) {
 	const { axiosAuth, user } = useAuth();
@@ -49,14 +26,12 @@ function PackForm({ initialValues, ...props }: FormPageProps) {
 				packId = createdPack.id;
 			}
 
-			// if (logo?.file) {
-			// 	await uploadImage(
-			// 		axiosAuth,
-			// 		`${MANAGE_API.PACKS}/${packId}/upload/logo`,
-			// 		logo.file
-			// 	);
-			// }
-			if (backgroundImage?.file) {
+			if (logo?.file) {
+				await uploadImage(
+					axiosAuth,
+					`${MANAGE_API.PACKS}/${packId}/upload/logo`,
+					logo.file
+				);
 			}
 		},
 		[]
@@ -89,14 +64,22 @@ function PackForm({ initialValues, ...props }: FormPageProps) {
 					<FormEditor />
 				</Form.Item>
 			</FormPage>
-			<Typography.Title level={2} className="mt-16">
-				Ca khám
-			</Typography.Title>
-			<AdminTable
-				columns={timeSLotColumns}
-				getApi={managePackApi.getTimeSlots}
-				pagination={false}
-			/>
+			{initialValues && (
+				<>
+					<Typography.Title level={2} className="mt-16">
+						Ca khám
+					</Typography.Title>
+					<TimeSlotTable
+						packId={initialValues?.id}
+						getApi={(axiosAuth, query) =>
+							managePackApi.getTimeSlots(axiosAuth, initialValues?.id, {
+								page: query.page,
+								size: query.size,
+							})
+						}
+					/>
+				</>
+			)}
 		</>
 	);
 }

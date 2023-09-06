@@ -20,7 +20,8 @@ export interface AdminTableProps<T extends object> extends TableProps<T> {
 		query: Record<string, any>
 	) => Promise<PaginationData<T>>;
 	toggleApi?: (axiosAuth: Axios, record: T) => Promise<any>;
-	creatable?: boolean;
+	onCreate?: (() => void) | boolean;
+	onEdit?: (record: T) => void;
 	getMoreActions?: (axiosAuth: Axios, record: T) => React.ReactNode;
 }
 
@@ -29,7 +30,8 @@ function AdminTable<T extends object>({
 	pagination,
 	getApi,
 	toggleApi,
-	creatable = true,
+	onCreate = true,
+	onEdit,
 	getMoreActions,
 	...props
 }: AdminTableProps<T>) {
@@ -52,6 +54,16 @@ function AdminTable<T extends object>({
 		};
 		fetchData();
 	}, [axiosAuth, getApi, router.query]);
+
+	const handleEdit = useCallback(
+		(record: T) => {
+			if (!onEdit) {
+				return router.push(`${router.route}/${record.id}/edit`);
+			}
+			return onEdit(record);
+		},
+		[onEdit, router]
+	);
 
 	const tableCols = useMemo(() => {
 		if (!columns) return [];
@@ -77,9 +89,11 @@ function AdminTable<T extends object>({
 				const text = record.active ? "Vô hiệu hóa" : "Kích hoạt";
 				return (
 					<div className="flex">
-						<Link href={`${router.route}/${record.id}/edit`}>
-							<Button icon={<EditOutlined />} type="link" />
-						</Link>
+						<Button
+							icon={<EditOutlined />}
+							onClick={() => handleEdit(record)}
+							type="link"
+						/>
 						{typeof toggleApi === "function" && (
 							<AppConfirm
 								title={text}
@@ -106,15 +120,15 @@ function AdminTable<T extends object>({
 			},
 		});
 		return newCols;
-	}, [axiosAuth, columns, message, router, toggleApi, getMoreActions]);
+	}, [columns, toggleApi, getMoreActions, axiosAuth, handleEdit]);
 
 	const tableProps = useMemo(() => {
 		const newProps: any = { ...props };
+		const { data, ...rest } = Array.isArray(res) ? { data: res } : res;
 		if (pagination === false) {
 			newProps.pagination = false;
-			newProps.dataSource = Array.isArray(res) ? res : undefined;
+			newProps.dataSource = data;
 		} else {
-			const { data, ...rest } = res;
 			newProps.pagination = {
 				...pagination,
 				showQuickJumper: true,
@@ -145,17 +159,22 @@ function AdminTable<T extends object>({
 		[router]
 	);
 
+	const handleCreate = useCallback(() => {
+		if (typeof onCreate === "function") {
+			return onCreate();
+		}
+		return router.push(`${router.route}/add`);
+	}, [onCreate, router]);
+
 	return (
 		<div>
 			<div className="">
-				{creatable && (
+				{onCreate && (
 					<Button
 						icon={<PlusOutlined />}
 						type="primary"
 						className="mb-4"
-						onClick={() => {
-							router.push(`${router.route}/add`);
-						}}>
+						onClick={handleCreate}>
 						Create
 					</Button>
 				)}

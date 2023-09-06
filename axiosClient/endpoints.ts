@@ -190,9 +190,15 @@ export const managePackApi = {
 		id: number | string,
 		params?: GetParamsType
 	) =>
-		axiosAuth.get(`${MANAGE_API.PACKS}/${id}${TIME_SLOTS}`, {
-			params,
-		}) as Promise<TimeSlot[]>,
+		axiosAuth
+			.get(`${MANAGE_API.PACKS}/${id}${TIME_SLOTS}`, {
+				params,
+			})
+			.then((data: any) => convertApiResponseToAppPagination<TimeSlot>(data)),
+	toggleTimeSlot: (axiosAuth: Axios, id: number | string, active: boolean) =>
+		active
+			? axiosAuth.delete(`${MANAGE_API.TIME_SLOTS}/${id}/inactive`)
+			: axiosAuth.put(`${MANAGE_API.TIME_SLOTS}/${id}/active`),
 };
 
 export const manageDoctorApi = {

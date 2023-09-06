@@ -82,7 +82,7 @@ function ManageRequestOrdersPage() {
 	return (
 		<AdminLayout>
 			<AdminTable
-				creatable={false}
+				onCreate={false}
 				getApi={(axiosAuth, query) => {
 					if (!user?.hospitalId) return Promise.resolve({}) as any;
 					return manageHospitalApi.getOrders(

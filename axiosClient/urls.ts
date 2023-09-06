@@ -4,6 +4,7 @@ export const PACKS = "/packs";
 export const DEPARTMENTS = "/departments";
 export const ORDERS = "/orders";
 export const TIME_SLOTS = "/time-slots";
+export const TIME_SLOT_VALUES = TIME_SLOTS + "/time-slot-values";
 
 export const MANAGE_API = {
 	DEPARTMENTS: `${HOSPITALS}/manage${DEPARTMENTS}`,
