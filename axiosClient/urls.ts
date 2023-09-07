@@ -11,4 +11,5 @@ export const MANAGE_API = {
 	DOCTORS: `${HOSPITALS}/manage${DOCTORS}`,
 	PACKS: `${HOSPITALS}/manage${PACKS}`,
 	TIME_SLOTS: `${HOSPITALS}/manage${PACKS}${TIME_SLOTS}`,
+	DOCTOR_TIME_SLOTS: `${DOCTORS}${TIME_SLOTS}`,
 };

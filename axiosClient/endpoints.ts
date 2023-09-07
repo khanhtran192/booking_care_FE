@@ -208,6 +208,10 @@ export const manageDoctorApi = {
 		active
 			? axiosAuth.delete(`${MANAGE_API.DOCTORS}/${id}/inactive`)
 			: axiosAuth.put(`${MANAGE_API.DOCTORS}/${id}/active`),
+	getOrders: (axiosAuth: Axios, id: number | string, params?: GetParamsType) =>
+		axiosAuth
+			.get(`${DOCTORS}/${id}${ORDERS}`, { params })
+			.then((data: any) => convertApiResponseToAppPagination<OrderInfo>(data)),
 };
 
 export const readIdCard = (image: File) => {

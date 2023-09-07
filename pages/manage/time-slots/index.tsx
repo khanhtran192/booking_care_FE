@@ -1,45 +1,19 @@
-import { manageDoctorApi, manageHospitalApi } from "@/axiosClient/endpoints";
-import { TimeSlot } from "@/axiosClient/types";
-import AdminTable from "@/components/AdminTable";
+import { DOCTORS, TIME_SLOTS } from "@/axiosClient/urls";
+import TimeSlotTable from "@/components/TimeSlotTable";
 import AdminLayout from "@/components/layout/AdminLayout";
 import { useAuth } from "@/lib/AuthProvider";
-import { type TableColumnsType } from "antd";
-
-const timeSLotColumns: TableColumnsType<TimeSlot> = [
-	{
-		dataIndex: "time",
-		title: "Thời gian",
-	},
-	{
-		dataIndex: "startTime",
-		title: "Bắt đầu",
-	},
-	{
-		dataIndex: "endTime",
-		title: "Kết thúc",
-	},
-	{
-		dataIndex: "price",
-		title: "Giá tiền",
-	},
-	{
-		dataIndex: "description",
-		title: "Mô tả",
-	},
-];
 
 function ManageTimeSlotsPage() {
 	const { user } = useAuth();
 	return (
 		<AdminLayout>
-			<AdminTable
-				columns={timeSLotColumns}
+			<TimeSlotTable
 				getApi={(axiosAuth, query) =>
-					manageHospitalApi.getDoctors(axiosAuth, user?.hospitalId, query)
+					axiosAuth.get(`${DOCTORS}/${user?.doctorId}${TIME_SLOTS}`, {
+						params: query,
+					})
 				}
-				toggleApi={(axiosAuth, record) =>
-					manageDoctorApi.toggleStatus(axiosAuth, record.id, record.active)
-				}
+				doctorId={user?.doctorId}
 			/>
 		</AdminLayout>
 	);

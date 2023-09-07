@@ -6,9 +6,8 @@ import {
 	EditOutlined,
 	PlusOutlined,
 } from "@ant-design/icons";
-import { App, Button, Popconfirm, Table, TableProps, Tag } from "antd";
+import { Button, Table, TableProps, Tag } from "antd";
 import { Axios } from "axios";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import queryString from "query-string";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -37,7 +36,6 @@ function AdminTable<T extends object>({
 }: AdminTableProps<T>) {
 	const router = useRouter();
 	const { axiosAuth } = useAuth();
-	const { message } = App.useApp();
 
 	const [res, setRes] = useState<PaginationData<T>>({} as any);
 	const [loading, setLoading] = useState(false);
@@ -100,7 +98,7 @@ function AdminTable<T extends object>({
 								onConfirm={async () => {
 									try {
 										await toggleApi(axiosAuth, record);
-										router.reload();
+										router.replace(router.asPath);
 									} catch (error) {}
 								}}>
 								{record.active ? (

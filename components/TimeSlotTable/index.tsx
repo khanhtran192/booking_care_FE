@@ -4,6 +4,7 @@ import { TimeSlot } from "@/axiosClient/types";
 import AdminTable, { AdminTableProps } from "../AdminTable";
 import TimeSlotFormDrawer, { FormDrawerRef } from "./TimeSlotFormDrawer";
 import { MANAGE_API } from "@/axiosClient/urls";
+import { Axios } from "axios";
 
 const timeSLotColumns: AdminTableProps<TimeSlot>["columns"] = [
 	{
@@ -33,13 +34,25 @@ function TimeSlotTable({
 
 	const openForm = useCallback(
 		(record?: TimeSlot) => {
-			formRef.current?.open({
-				...record,
-				packId,
-				doctorId,
-			});
+			formRef.current?.open(
+				{
+					...record,
+					packId,
+					doctorId,
+				},
+				record ? "edit" : "add"
+			);
 		},
 		[doctorId, packId]
+	);
+
+	const getData = useCallback(
+		(axiosAuth: Axios) =>
+			getApi(axiosAuth, {
+				page: 0,
+				size: 100,
+			}),
+		[packId, doctorId]
 	);
 	return (
 		<>
@@ -47,12 +60,7 @@ function TimeSlotTable({
 				columns={timeSLotColumns}
 				onCreate={openForm}
 				onEdit={openForm}
-				getApi={(axiosAuth) =>
-					getApi(axiosAuth, {
-						page: 0,
-						size: 100,
-					})
-				}
+				getApi={getData}
 				toggleApi={(axiosAuth, record) =>
 					managePackApi.toggleTimeSlot(axiosAuth, record.id, record.active)
 				}
@@ -61,8 +69,12 @@ function TimeSlotTable({
 			/>
 			<TimeSlotFormDrawer
 				ref={formRef}
-				postUrl={MANAGE_API.TIME_SLOTS}
-				putUrl={({ id }) => `${MANAGE_API.TIME_SLOTS}/${id}`}
+				postUrl={packId ? MANAGE_API.TIME_SLOTS : MANAGE_API.DOCTOR_TIME_SLOTS}
+				putUrl={({ id }) =>
+					packId
+						? `${MANAGE_API.TIME_SLOTS}/${id}`
+						: `${MANAGE_API.DOCTOR_TIME_SLOTS}/${id}`
+				}
 			/>
 		</>
 	);

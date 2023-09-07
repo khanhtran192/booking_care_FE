@@ -1,4 +1,4 @@
-import { manageHospitalApi } from "@/axiosClient/endpoints";
+import { manageDoctorApi, manageHospitalApi } from "@/axiosClient/endpoints";
 import { OrderInfo } from "@/axiosClient/types";
 import AdminTable from "@/components/AdminTable";
 import AppConfirm from "@/components/AppConfirm";
@@ -64,7 +64,7 @@ function ManageRequestOrdersPage() {
 					title="Nhận đơn"
 					onConfirm={async () => {
 						await axiosAuth.put(url + "approved");
-						router.reload();
+						router.replace(router.asPath);
 					}}>
 					<Button type="link" icon={<CheckOutlined />} />
 				</AppConfirm>
@@ -72,7 +72,7 @@ function ManageRequestOrdersPage() {
 					title="Từ chối đơn"
 					onConfirm={async () => {
 						await axiosAuth.put(url + "rejected");
-						router.reload();
+						router.replace(router.asPath);
 					}}>
 					<Button type="link" icon={<CloseCircleOutlined />} danger />
 				</AppConfirm>
@@ -84,12 +84,17 @@ function ManageRequestOrdersPage() {
 			<AdminTable
 				onCreate={false}
 				getApi={(axiosAuth, query) => {
-					if (!user?.hospitalId) return Promise.resolve({}) as any;
-					return manageHospitalApi.getOrders(
-						axiosAuth,
-						user?.hospitalId,
-						query
-					);
+					if (user?.hospitalId) {
+						return manageHospitalApi.getOrders(
+							axiosAuth,
+							user?.hospitalId,
+							query
+						);
+					}
+					if (user?.doctorId) {
+						return manageDoctorApi.getOrders(axiosAuth, user?.doctorId, query);
+					}
+					return Promise.resolve({} as any);
 				}}
 				getMoreActions={getMoreActions}
 				columns={columns}

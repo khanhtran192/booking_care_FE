@@ -21,6 +21,11 @@ import { ROLE } from "@/global/constants";
 const { Content, Sider } = Layout;
 
 const getMenuItems = (user: UserInfo) => {
+	const infoKey = user?.hospitalId
+		? `hospitals/${user.hospitalId}/edit`
+		: user?.doctorId
+		? `doctors/${user.doctorId}/edit`
+		: "info";
 	const menuItems: MenuProps["items"] = [
 		{
 			key: "dashboard",
@@ -28,7 +33,7 @@ const getMenuItems = (user: UserInfo) => {
 			icon: <DashboardOutlined />,
 		},
 		{
-			key: user?.hospitalId ? `hospitals/${user.hospitalId}/edit` : "info",
+			key: infoKey,
 			label: user?.hospitalId ? "Thông tin bệnh viện" : "Thông tin cá nhân",
 			icon: <IdcardOutlined />,
 		},

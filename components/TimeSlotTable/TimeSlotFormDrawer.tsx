@@ -21,9 +21,10 @@ import {
 import ApiSelect from "../fields/select";
 import { FORMAT_HOUR } from "@/global/constants";
 import dayjs from "dayjs";
+import { useRouter } from "next/router";
 
 export type FormDrawerRef = {
-	open: (initialValues?: any) => void;
+	open: (initialValues?: any, mode?: "edit" | "add") => void;
 	close: () => void;
 };
 
@@ -41,6 +42,7 @@ function TimeSlotFormDrawer(
 	{ postUrl, putUrl, initialValues, ...props }: FormDrawerProps,
 	ref: Ref<FormDrawerRef>
 ) {
+	const router = useRouter();
 	const [form] = Form.useForm();
 	const [open, setOpen] = useState<"edit" | "add" | undefined>();
 	const { axiosAuth } = useAuth();
@@ -55,8 +57,8 @@ function TimeSlotFormDrawer(
 	useImperativeHandle(
 		ref,
 		() => ({
-			open: (initialValues) => {
-				setOpen(initialValues ? "edit" : "add");
+			open: (initialValues, mode?: "edit" | "add") => {
+				setOpen(mode ?? (initialValues ? "edit" : "add"));
 				const time = [
 					getDayjs(initialValues?.startTime?.value),
 					getDayjs(initialValues?.endTime?.value),
@@ -79,7 +81,8 @@ function TimeSlotFormDrawer(
 				typeof func === "function" ? func(newValues) : func;
 			setLoading(true);
 			try {
-				if (isEdit) {
+				if (!isEdit) {
+					newValues.active = true;
 					await axiosAuth.post(getUrl(postUrl), newValues);
 					message.success("Thêm thành công");
 				} else {
@@ -87,13 +90,19 @@ function TimeSlotFormDrawer(
 					message.success("Sửa thành công");
 				}
 				setLoading(false);
+				router.replace(router.asPath);
 				close();
 			} catch (error) {
+				if ((error as any)?.response?.status === 400) {
+					message.error("Thời gian bị trùng");
+				} else {
+					message.error("Có lỗi xảy ra");
+				}
 				setLoading(false);
 				console.log(error);
 			}
 		},
-		[isEdit, close, axiosAuth, postUrl, putUrl]
+		[isEdit, router, close, axiosAuth, postUrl, putUrl]
 	);
 
 	const text = isEdit ? "Sửa" : "Thêm";
@@ -128,6 +137,7 @@ function TimeSlotFormDrawer(
 				<Form.Item name="doctorId" hidden>
 					<Input />
 				</Form.Item>
+				<Form.Item name="active" hidden></Form.Item>
 				<Form.Item name="time" label="Thời gian khám">
 					<TimePicker.RangePicker
 						className="w-full"
