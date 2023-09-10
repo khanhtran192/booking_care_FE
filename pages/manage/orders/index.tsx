@@ -9,7 +9,7 @@ import { Button, Tag, type TableColumnsType } from "antd";
 import { Axios } from "axios";
 import { useCallback } from "react";
 
-const statusProps: Record<
+export const statusProps: Record<
 	ORDER_STATUS,
 	{
 		color: string;

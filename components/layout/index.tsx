@@ -9,6 +9,7 @@ type Props = {
 	pageTitle?: ReactNode;
 	bgImage?: string;
 	subTitle?: string;
+	onSearch?: (value: string) => void;
 };
 
 function Layout({
@@ -16,6 +17,7 @@ function Layout({
 	pageTitle,
 	bgImage = "mainBg.svg",
 	subTitle,
+	onSearch,
 }: Props) {
 	return (
 		<>
@@ -32,10 +34,11 @@ function Layout({
 							</button>
 							<h1 className="text-purple-500 text-7xl">{pageTitle}</h1>
 							<p className="text-xl text-blue-400">{subTitle}</p>
-							<Input
+							<Input.Search
 								className="w-3/4"
 								type="text"
 								placeholder="Tìm bệnh viện"
+								onSearch={onSearch}
 							/>
 						</div>
 						<Image

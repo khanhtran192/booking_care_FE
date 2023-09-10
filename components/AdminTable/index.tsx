@@ -12,6 +12,7 @@ import { useRouter } from "next/router";
 import queryString from "query-string";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import AppConfirm from "../AppConfirm";
+import { useAuthFetch } from "@/lib/hooks";
 
 export interface AdminTableProps<T extends object> extends TableProps<T> {
 	getApi: (
@@ -36,22 +37,10 @@ function AdminTable<T extends object>({
 }: AdminTableProps<T>) {
 	const router = useRouter();
 	const { axiosAuth } = useAuth();
-
-	const [res, setRes] = useState<PaginationData<T>>({} as any);
-	const [loading, setLoading] = useState(false);
-	useEffect(() => {
-		const fetchData = async () => {
-			setLoading(true);
-			try {
-				const response = await getApi(axiosAuth, router.query);
-				setRes(response);
-				setLoading(false);
-			} catch (error) {
-				setLoading(false);
-			}
-		};
-		fetchData();
-	}, [axiosAuth, getApi, router.query]);
+	const { data: res, loading } = useAuthFetch<PaginationData<T>>(
+		getApi,
+		router.query
+	);
 
 	const handleEdit = useCallback(
 		(record: T) => {
@@ -66,7 +55,19 @@ function AdminTable<T extends object>({
 	const tableCols = useMemo(() => {
 		if (!columns) return [];
 
-		const newCols = [...columns];
+		const newCols: NonNullable<AdminTableProps<T>["columns"]> = columns.map(
+			(col) => {
+				const newCols = { ...col };
+				if (
+					"dataIndex" in col &&
+					col.dataIndex &&
+					router.query[col.dataIndex]
+				) {
+					newCols.filteredValue = [router.query[col.dataIndex]];
+				}
+				return newCols;
+			}
+		);
 		if (typeof toggleApi === "function") {
 			newCols.push({
 				title: "Trạng thái",
@@ -118,11 +119,11 @@ function AdminTable<T extends object>({
 			},
 		});
 		return newCols;
-	}, [columns, toggleApi, getMoreActions, axiosAuth, handleEdit]);
+	}, [columns, toggleApi, router, getMoreActions, axiosAuth, handleEdit]);
 
 	const tableProps = useMemo(() => {
 		const newProps: any = { ...props };
-		const { data, ...rest } = Array.isArray(res) ? { data: res } : res;
+		const { data, ...rest } = Array.isArray(res) ? { data: res } : res ?? {};
 		if (pagination === false) {
 			newProps.pagination = false;
 			newProps.dataSource = data;
@@ -141,11 +142,24 @@ function AdminTable<T extends object>({
 	const handleTableChange = useCallback<
 		NonNullable<AdminTableProps<T>["onChange"]>
 	>(
-		(pagination, _, sorter) => {
+		(pagination, filter, sorter) => {
 			const newParams: Record<string, any> = {
 				page: (pagination.current ?? 1) - 1,
 				size: pagination.pageSize,
 			};
+
+			if (filter) {
+				for (const key in filter) {
+					if (Object.prototype.hasOwnProperty.call(filter, key)) {
+						const element = filter[key];
+						if (Array.isArray(element)) {
+							newParams[key] = element.join(",");
+						} else {
+							newParams[key] = element;
+						}
+					}
+				}
+			}
 
 			router.replace(
 				`${router.route}?${queryString.stringify(newParams, {
@@ -181,6 +195,7 @@ function AdminTable<T extends object>({
 				onChange={handleTableChange}
 				columns={tableCols}
 				loading={loading}
+				rowKey="id"
 				{...tableProps}
 			/>
 		</div>

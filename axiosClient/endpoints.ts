@@ -160,9 +160,14 @@ export const manageHospitalApi = {
 		axiosAuth.get(`${MANAGE_API.PACKS}/${id}${TIME_SLOTS}`, {
 			params,
 		}) as Promise<TimeSlot>,
-	getOrders: (axiosAuth: Axios, id: number | string, params?: GetParamsType) =>
+	getOrders: (
+		axiosAuth: Axios,
+		id: number | string,
+		params?: GetParamsType,
+		signal?: AbortSignal
+	) =>
 		axiosAuth
-			.get(`${HOSPITALS}/${id}/manage/order`, { params })
+			.get(`${HOSPITALS}/${id}/manage/order`, { params, signal })
 			.then((data: any) => convertApiResponseToAppPagination<OrderInfo>(data)),
 };
 
@@ -208,9 +213,14 @@ export const manageDoctorApi = {
 		active
 			? axiosAuth.delete(`${MANAGE_API.DOCTORS}/${id}/inactive`)
 			: axiosAuth.put(`${MANAGE_API.DOCTORS}/${id}/active`),
-	getOrders: (axiosAuth: Axios, id: number | string, params?: GetParamsType) =>
+	getOrders: (
+		axiosAuth: Axios,
+		id: number | string,
+		params?: GetParamsType,
+		signal?: AbortSignal
+	) =>
 		axiosAuth
-			.get(`${DOCTORS}/${id}${ORDERS}`, { params })
+			.get(`${DOCTORS}/${id}${ORDERS}`, { params, signal })
 			.then((data: any) => convertApiResponseToAppPagination<OrderInfo>(data)),
 };
 

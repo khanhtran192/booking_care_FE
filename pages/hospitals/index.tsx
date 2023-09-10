@@ -6,6 +6,7 @@ import AppContainer from "@/components/layout/AppContainer";
 import AppGrid from "@/components/layout/AppGrid";
 import ListLayout from "@/components/layout/ListLayout";
 import { GetServerSideProps } from "next";
+import { useRouter } from "next/router";
 
 type Props = {
 	hospitals: Awaited<ReturnType<typeof hospitalApi.get>>;
@@ -15,6 +16,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
 	query,
 }) => {
 	const hospitals = await hospitalApi.get(query);
+	console.log("hospitals :", hospitals);
 	return {
 		props: {
 			hospitals,
@@ -23,9 +25,13 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
 };
 
 function Hospital({ hospitals }: Props) {
+	const router = useRouter();
 	const { data, ...rest } = hospitals;
 	return (
-		<Layout>
+		<Layout
+			onSearch={(value) => {
+				router.replace(`/hospitals?keyword=${value}`);
+			}}>
 			<ListLayout title="Cơ sở y tế">
 				<AppContainer className="py-16">
 					<AppGrid>

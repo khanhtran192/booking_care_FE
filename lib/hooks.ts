@@ -36,7 +36,9 @@ export const usePost = <T extends (...arg: any[]) => Promise<any>>(api: T) => {
 };
 
 export const useAuthFetch = <T>(
-	url: string | ((axiosAuth: Axios) => Promise<T>),
+	url:
+		| string
+		| ((axiosAuth: Axios, params?: Record<string, any>) => Promise<T>),
 	params?: Record<string, any>
 ) => {
 	const { axiosAuth } = useAuth();
@@ -49,7 +51,7 @@ export const useAuthFetch = <T>(
 			try {
 				const data = (
 					typeof url === "function"
-						? await url(axiosAuth)
+						? await url(axiosAuth, params)
 						: await axiosAuth.get(url, { params })
 				) as T;
 				setLoading(false);

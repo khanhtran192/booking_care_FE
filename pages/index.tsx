@@ -7,6 +7,7 @@ import Doctor from "@/components/sections/Doctor";
 import SectionList from "@/components/sections/SectionList";
 import { GetServerSideProps } from "next";
 import { Inter } from "next/font/google";
+import { useRouter } from "next/router";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -43,8 +44,13 @@ export const getServerSideProps: GetServerSideProps = async () => {
 };
 
 export default function Home({ hospitals, doctors, blogs }: any) {
+	const router = useRouter();
 	return (
-		<Layout pageTitle={"Nền tảng y tế Chăm sóc sức khỏe toàn diện"}>
+		<Layout
+			pageTitle={"Nền tảng y tế Chăm sóc sức khỏe toàn diện"}
+			onSearch={(keyword) => {
+				router.push(`/hospitals?keyword=${keyword}`);
+			}}>
 			<div className="py-16">
 				<AppContainer>
 					<AppCarousel>
