@@ -1,5 +1,6 @@
 import { PaginationData } from "@/axiosClient/types";
 import { useAuth } from "@/lib/AuthProvider";
+import { useAuthFetch } from "@/lib/hooks";
 import {
 	CheckOutlined,
 	CloseOutlined,
@@ -10,9 +11,8 @@ import { Button, Table, TableProps, Tag } from "antd";
 import { Axios } from "axios";
 import { useRouter } from "next/router";
 import queryString from "query-string";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import AppConfirm from "../AppConfirm";
-import { useAuthFetch } from "@/lib/hooks";
 
 export interface AdminTableProps<T extends object> extends TableProps<T> {
 	getApi: (

@@ -1,11 +1,13 @@
 import Image from "next/image";
 import React, { ReactNode } from "react";
 import { Form, FormProps } from "antd";
+import { cn } from "@/lib/utils";
 
 function LoginLayout<Values>({
 	children,
 	form,
 	onFinish,
+	className,
 	...props
 }: FormProps<Values>) {
 	return (
@@ -20,7 +22,10 @@ function LoginLayout<Values>({
 			<div className="rounded-3xl shadow-md bg-white p-8 pb-4">
 				<Form
 					form={form}
-					className="flex flex-col w-full min-h-[30rem] min-w-[20rem]"
+					className={cn(
+						"flex flex-col w-full min-h-[30rem] min-w-[20rem]",
+						className
+					)}
 					validateMessages={{ required: "Thông tin này là bắt buộc" }}
 					onFinish={onFinish}
 					{...props}>

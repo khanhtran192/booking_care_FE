@@ -91,6 +91,13 @@ export const authApi = {
 				Authorization: `Bearer ${token}`,
 			},
 		}) as Promise<UserInfo>,
+	resetPassword: (data: string) =>
+		axiosClient.post("/account/reset-password/init", data),
+	changePassword: (key: string, newPassword: string) =>
+		axiosClient.post("/account/reset-password/finish", {
+			key,
+			newPassword,
+		}),
 };
 
 export const orderApi = {
