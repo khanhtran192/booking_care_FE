@@ -102,19 +102,25 @@ function DoctorForm({ initialValues, ...props }: FormPageProps) {
 						<Input />
 					</Form.Item>
 				)}
-				<ApiSelect
-					url={(axios) =>
-						manageHospitalApi
-							.getDepartments(axios, user?.hospitalId as number, {
-								size: 9999,
-							})
-							.then((data) => data.data)
-					}
-					labelKey="departmentName"
-					name="departmentId"
-					label="Phòng ban"
-					placeholder="Chọn phòng ban"
-				/>
+				{user?.doctorId ? (
+					<Form.Item label="Phòng ban" name={["department", "departmentName"]}>
+						<Input disabled />
+					</Form.Item>
+				) : (
+					<ApiSelect
+						url={(axios) =>
+							manageHospitalApi
+								.getDepartments(axios, user?.hospitalId as number, {
+									size: 9999,
+								})
+								.then((data) => data.data)
+						}
+						labelKey="departmentName"
+						name="departmentId"
+						label="Phòng ban"
+						placeholder="Chọn phòng ban"
+					/>
+				)}
 			</div>
 			{initialValues && (
 				<Form.Item name="specialize" label="Mô tả">

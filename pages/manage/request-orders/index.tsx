@@ -37,7 +37,7 @@ const columns: TableColumnsType<OrderInfo> = [
 	},
 	{
 		title: "Triệu chứng",
-		dataIndex: "symtom",
+		dataIndex: "symptom",
 	},
 	{
 		title: "Giá tiền",
@@ -95,7 +95,7 @@ function ManageRequestOrdersPage() {
 				...query,
 				status: query.status ?? ORDER_STATUS.PENDING,
 			};
-			if (!query.size) return Promise.resolve({} as any);
+			// if (!query.size) return Promise.resolve({} as any);
 			if (user?.hospitalId) {
 				return manageHospitalApi.getOrders(axiosAuth, user?.hospitalId, params);
 			}

@@ -41,7 +41,10 @@ const Info: React.FC = () => {
 		if (user?.hospitalId) {
 			router.replace(`/manage/hospitals/${user?.hospitalId}/edit`);
 		}
-	}, [router, user?.hospitalId]);
+		if (user?.doctorId) {
+			router.replace(`/manage/doctors/${user?.doctorId}/edit`);
+		}
+	}, [router, user?.doctorId, user?.hospitalId]);
 
 	//fetch data
 	useEffect(() => {
