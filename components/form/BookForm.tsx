@@ -106,6 +106,7 @@ function BookForm({
 						onChange={(date) => {
 							setDateSelect(date);
 						}}
+						disabledDate={(date) => date < dayjs().startOf("day")}
 					/>
 				</Form.Item>
 			</div>
